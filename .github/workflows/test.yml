@@ -11,7 +11,9 @@ jobs:
         python-version: [ "3.10", "3.11", "3.12"]
         requirements-file: [
           dj42_cms41.txt,
-          dj50_cms41.txt
+          dj50_cms41.txt,
+          dj51_cms41.txt,
+          dj52_cms41.txt
         ]
         os: [
           ubuntu-20.04,
