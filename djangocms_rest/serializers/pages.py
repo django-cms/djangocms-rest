@@ -51,7 +51,7 @@ class BasePageContentMixin:
             "path": relative_url,
             "absolute_url": absolute_url,
             "is_home": page_content.page.is_home,
-            "languages": page_content.page.languages.split(","),
+            "languages": page_content.page.get_languages(),
             "is_preview": getattr(self, "is_preview", False),
             "creation_date": page_content.creation_date,
             "changed_date": page_content.changed_date,
@@ -68,8 +68,10 @@ class PageTreeSerializer(serializers.ListSerializer):
     def tree_to_representation(self, item: PageContent) -> Dict:
         serialized_data = self.child.to_representation(item)
         serialized_data["children"] = []
-        if item.page.node in self.tree:
-            serialized_data["children"] = [self.tree_to_representation(child) for child in self.tree[item.page.node]]
+        if item.page in self.tree:
+            serialized_data["children"] = [
+                self.tree_to_representation(child) for child in self.tree[item.page]
+            ]
         return serialized_data
 
     def to_representation(self, data: Dict) -> list[Dict]:
@@ -96,7 +98,7 @@ class PageMetaSerializer(BasePageSerializer, BasePageContentMixin):
             instances = []
         tree = {}
         for instance in instances:
-            parent = instance.page.node.parent
+            parent = instance.page.parent
             tree.setdefault(parent, []).append(instance)
 
         # Prepare the child serializer with proper context.

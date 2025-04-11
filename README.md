@@ -11,6 +11,7 @@ read-only, REST/JSON API. It is based on the django rest framework (DRF) and sup
 
 **✨ Key Features**
 
+💫 **Django CMS 5 Support** – Latest version support (5.0.0a1)<br>
 🏢 **Multi-site support** – Supports Django sites<br>
 🌍 **Internationalization (i18n)** – Supports available CMS languages<br>
 🌲 **Structured page tree** – Fetch the full page tree with metadata<br>

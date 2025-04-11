@@ -22,7 +22,9 @@ class PageListAPITestCase(BaseCMSRestTestCase):
 
         # Get current site
         site = Site.objects.get_current()
-        expected_total = PageContent.objects.filter(language="en", page__node__site=site).count()
+        expected_total = PageContent.objects.filter(
+            language="en", page__site=site
+        ).count()
 
         type_checks = {
             "title": str,

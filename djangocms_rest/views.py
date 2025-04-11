@@ -72,7 +72,7 @@ class PageListView(BaseListAPIView):
         """Get queryset of pages for the given language."""
         language = self.kwargs['language']
         site = self.site
-        qs = Page.objects.filter(node__site=site)
+        qs = Page.objects.filter(site=site)
 
         #Filter out pages which require login
         if self.request.user.is_anonymous:
@@ -96,7 +96,7 @@ class PageTreeListView(BaseAPIView):
     def get(self, request, language):
         """List of all pages on this site for a given language."""
         site = self.site
-        qs = Page.objects.filter(node__site=site)
+        qs = Page.objects.filter(site=site)
 
         #Filter out pages which require login
         if self.request.user.is_anonymous:
@@ -260,7 +260,7 @@ class PreviewPageTreeListView(BaseAPIView):
     def get(self, request, language):
         """List of all draft/preview pages on this site for a given language."""
         site = self.site
-        qs = Page.objects.filter(node__site=site)
+        qs = Page.objects.filter(site=site)
 
         try:
             # Create a generator similar to PageTreeListView but using admin_manager
@@ -290,7 +290,7 @@ class PreviewPageListView(BaseListAPIView):
         """Get queryset of draft/preview pages for the given language."""
         language = self.kwargs['language']
         site = self.site
-        qs = Page.objects.filter(node__site=site)
+        qs = Page.objects.filter(site=site)
 
         try:
             pages = [

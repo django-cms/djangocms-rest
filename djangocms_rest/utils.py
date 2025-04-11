@@ -5,9 +5,7 @@ from django.http import Http404
 
 def get_object(site: Site, path: str) -> Page:
     page_urls = (
-        PageUrl.objects.get_for_site(site)
-        .filter(path=path)
-        .select_related("page__node")
+        PageUrl.objects.get_for_site(site).filter(path=path).select_related("page")
     )
     page_urls = list(page_urls)
     try:
