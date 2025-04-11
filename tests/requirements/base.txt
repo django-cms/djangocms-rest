@@ -1,7 +1,5 @@
 # requirements from setup.py
 djangorestframework
-djangocms-picture>=2.1.0
-djangocms-link>=2.2.1
 djangocms-text
 setuptools
 

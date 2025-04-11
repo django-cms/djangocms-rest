@@ -33,13 +33,15 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.9"
+python = ">=3.9,<4"
 django-cms = ">=4.1.1"
 djangorestframework = "*"
 djangocms-link = "^5.0.0"
 djangocms-text = "^0.8.0"
 pytest-cov = "^6.0.0"
 pytest-django = "^4.10.0"
+djangocms-picture = "^4.1.1"
+django-filer = "^3.3.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.3.1"
