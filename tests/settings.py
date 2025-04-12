@@ -31,11 +31,7 @@ INSTALLED_APPS = [
     'treebeard',
     'sekizai',
 
-    'djangocms_link',
-    'djangocms_picture',
     'djangocms_text',
-    'filer',
-    'easy_thumbnails',
     'tests.test_app',
 ]
 
@@ -71,23 +67,23 @@ TEMPLATES = [
 CMS_LANGUAGES = {
     1: [
         {
-            'code': 'en',
-            'name': gettext('English'),
-            'public': True,
+            "code": "en",
+            "name": gettext("English"),
+            "public": True,
         },
         {
-            'code': 'it',
-            'name': gettext('Italiano'),
-            'public': True,
+            "code": "it",
+            "name": gettext("Italiano"),
+            "public": True,
         },
         {
-            'code': 'fr',
-            'name': gettext('French'),
-            'public': True,
+            "code": "fr",
+            "name": gettext("French"),
+            "public": False,
         },
     ],
-    'default': {
-        'hide_untranslated': False,
+    "default": {
+        "hide_untranslated": False,
     },
 }
 
