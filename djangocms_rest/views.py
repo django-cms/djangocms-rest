@@ -12,6 +12,7 @@ from djangocms_rest.permissions import (
     CanViewPage,
     CanViewPageContent,
     IsAllowedLanguage,
+    IsAllowedPublicLanguage,
 )
 from djangocms_rest.serializers.languages import LanguageSerializer
 from djangocms_rest.serializers.pages import (
@@ -64,7 +65,7 @@ class LanguageListView(BaseAPIView):
 
 
 class PageListView(BaseListAPIView):
-    permission_classes = [IsAllowedLanguage]
+    permission_classes = [IsAllowedPublicLanguage]
     serializer_class = PageListSerializer
     pagination_class = LimitOffsetPagination
 
@@ -90,7 +91,7 @@ class PageListView(BaseListAPIView):
             raise NotFound()
 
 class PageTreeListView(BaseAPIView):
-    permission_classes = [IsAllowedLanguage]
+    permission_classes = [IsAllowedPublicLanguage]
     serializer_class = PageMetaSerializer
 
     def get(self, request, language):
@@ -119,7 +120,7 @@ class PageTreeListView(BaseAPIView):
 
 
 class PageDetailView(BaseAPIView):
-    permission_classes = [CanViewPage]
+    permission_classes = [IsAllowedPublicLanguage, CanViewPage]
     serializer_class = PageContentSerializer
 
     def get(self, request: Request, language: str, path: str = "") -> Response:
@@ -140,8 +141,8 @@ class PageDetailView(BaseAPIView):
 
 
 class PlaceholderDetailView(BaseAPIView):
+    permission_classes = [IsAllowedPublicLanguage, CanViewPageContent]
     serializer_class = PlaceholderSerializer
-    permission_classes = [CanViewPageContent]
 
     @extend_placeholder_schema
 

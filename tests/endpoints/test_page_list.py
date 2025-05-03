@@ -73,6 +73,10 @@ class PageListAPITestCase(BaseCMSRestTestCase):
         response = self.client.get(reverse("page-list", kwargs={"language": "xx"}))
         self.assertEqual(response.status_code, 404)
 
+        # Check Non-Public language
+        response = self.client.get(reverse("page-list", kwargs={"language": "fr"}))
+        self.assertEqual(response.status_code, 404)
+
         # GET PREVIEW
         response = self.client.get(reverse("preview-page-list", kwargs={"language": "en"}))
         self.assertEqual(response.status_code, 403)

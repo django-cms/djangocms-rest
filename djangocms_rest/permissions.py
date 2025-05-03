@@ -1,5 +1,5 @@
 from cms.models import Page, PageContent
-from cms.utils.i18n import get_language_tuple
+from cms.utils.i18n import get_language_tuple, get_languages
 from cms.utils.page_permissions import user_can_view_page
 from rest_framework.exceptions import NotFound
 from rest_framework.permissions import BasePermission
@@ -10,7 +10,7 @@ from djangocms_rest.views_base import BaseAPIView
 
 class IsAllowedLanguage(BasePermission):
     """
-    Check whether the provided language is allowed.
+    Check whether the provided language is allowed for a given site.
     """
 
     def has_permission(self, request: Request, view: BaseAPIView) -> bool:
@@ -20,6 +20,24 @@ class IsAllowedLanguage(BasePermission):
         if language not in allowed_languages:
             raise NotFound()
         return True
+
+
+class IsAllowedPublicLanguage(IsAllowedLanguage):
+    """
+    Check whether the provided language is allowed and public for a given site.
+    """
+    def has_permission(self, request: Request, view: BaseAPIView) -> bool:
+        super().has_permission(request, view)
+        language = view.kwargs.get("language")
+        languages = get_languages()
+        public_languages = [
+            lang["code"] for lang in languages if lang.get("public", True)
+        ]
+        if language not in public_languages:
+            raise NotFound()
+        return True
+
+
 
 
 class CanViewPage(IsAllowedLanguage):

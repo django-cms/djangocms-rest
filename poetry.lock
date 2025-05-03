@@ -29,6 +29,17 @@ files = [
 ]
 
 [[package]]
+name = "chardet"
+version = "5.2.0"
+description = "Universal encoding detector for Python 3"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "chardet-5.2.0-py3-none-any.whl", hash = "sha256:e1cf59446890a00105fe7b7912492ea04b6e6f06d4b742b2c788469e34c82970"},
+    {file = "chardet-5.2.0.tar.gz", hash = "sha256:1b3b6ff479a8c414bc3fa2c0852995695c4a026dcd6d0633b2dd092ca39c1cf7"},
+]
+
+[[package]]
 name = "charset-normalizer"
 version = "3.4.1"
 description = "The Real First Universal Charset Detector. Open, modern and actively maintained alternative to Chardet."
@@ -219,6 +230,25 @@ tomli = {version = "*", optional = true, markers = "python_full_version <= \"3.1
 toml = ["tomli"]
 
 [[package]]
+name = "cssselect2"
+version = "0.8.0"
+description = "CSS selectors for Python ElementTree"
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "cssselect2-0.8.0-py3-none-any.whl", hash = "sha256:46fc70ebc41ced7a32cd42d58b1884d72ade23d21e5a4eaaf022401c13f0e76e"},
+    {file = "cssselect2-0.8.0.tar.gz", hash = "sha256:7674ffb954a3b46162392aee2a3a0aedb2e14ecf99fcc28644900f4e6e3e9d3a"},
+]
+
+[package.dependencies]
+tinycss2 = "*"
+webencodings = "*"
+
+[package.extras]
+doc = ["furo", "sphinx"]
+test = ["pytest", "ruff"]
+
+[[package]]
 name = "django"
 version = "4.2.19"
 description = "A high-level Python web framework that encourages rapid development and clean, pragmatic design."
@@ -278,6 +308,25 @@ argon2 = ["argon2-cffi (>=19.1.0)"]
 bcrypt = ["bcrypt"]
 
 [[package]]
+name = "django-filer"
+version = "3.3.1"
+description = "A file management application for django that makes handling of files and images a breeze."
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "django_filer-3.3.1-py3-none-any.whl", hash = "sha256:aeaf7c665728a0e8c1a839612ccd993956006c6b683e002013b561b7da53b087"},
+    {file = "django_filer-3.3.1.tar.gz", hash = "sha256:397c0b0f313371cc9e0cd92b3f1b0023b8dd213d7ebd038d6e289437df027bd0"},
+]
+
+[package.dependencies]
+django = ">=3.2"
+django-polymorphic = "*"
+easy-thumbnails = {version = "*", extras = ["svg"]}
+
+[package.extras]
+heif = ["pillow-heif"]
+
+[[package]]
 name = "django-formtools"
 version = "2.5.1"
 description = "A set of high-level abstractions for Django forms"
@@ -290,6 +339,20 @@ files = [
 
 [package.dependencies]
 Django = ">=3.2"
+
+[[package]]
+name = "django-polymorphic"
+version = "3.1.0"
+description = "Seamless polymorphic inheritance for Django models"
+optional = false
+python-versions = "*"
+files = [
+    {file = "django-polymorphic-3.1.0.tar.gz", hash = "sha256:d6955b5308bf6e41dcb22ba7c96f00b51dfa497a8a5ab1e9c06c7951bf417bf8"},
+    {file = "django_polymorphic-3.1.0-py3-none-any.whl", hash = "sha256:08bc4f4f4a773a19b2deced5a56deddd1ef56ebd15207bf4052e2901c25ef57e"},
+]
+
+[package.dependencies]
+Django = ">=2.1"
 
 [[package]]
 name = "django-sekizai"
@@ -401,6 +464,23 @@ django-cms = ">=3.7,<4.1 || >4.1,<4.1.1 || >4.1.1,<4.1.2 || >4.1.2"
 djangocms-attributes-field = ">=1"
 
 [[package]]
+name = "djangocms-picture"
+version = "4.1.1"
+description = "Adds an image plugin to django CMS"
+optional = false
+python-versions = "*"
+files = [
+    {file = "djangocms-picture-4.1.1.tar.gz", hash = "sha256:29ffadc514bfa306ec1f2ebb145391b9b860c12ba001e2475dffb5fe1be5cac2"},
+    {file = "djangocms_picture-4.1.1-py3-none-any.whl", hash = "sha256:d5a568f7bbbed7f9af3c7eb4901ec95b94ccdbc16b3debf52ae98f2ec6920671"},
+]
+
+[package.dependencies]
+django-cms = ">=3.7"
+django-filer = ">=1.7"
+djangocms-attributes-field = ">=1"
+easy-thumbnails = "*"
+
+[[package]]
 name = "djangocms-text"
 version = "0.8.0"
 description = "Rich Text Plugin for django CMS"
@@ -453,6 +533,26 @@ typing-extensions = ">=3.10.0"
 compatible-mypy = ["django-stubs[compatible-mypy]", "mypy (>=1.7.0,<1.8.0)"]
 coreapi = ["coreapi (>=2.0.0)"]
 markdown = ["types-Markdown (>=0.1.5)"]
+
+[[package]]
+name = "easy-thumbnails"
+version = "2.10"
+description = "Easy thumbnails for Django"
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "easy_thumbnails-2.10-py3-none-any.whl", hash = "sha256:9e446fb9da1ca0cbc99bdd1fe8fdd5c38784323d64393a37e16d13cd736980b2"},
+    {file = "easy_thumbnails-2.10.tar.gz", hash = "sha256:d009462fcd791edf2496e5ed46d044712e1a06b7d4600e4cf2812002e9904ef5"},
+]
+
+[package.dependencies]
+django = ">=4.2"
+pillow = "*"
+reportlab = {version = "*", optional = true, markers = "extra == \"svg\""}
+svglib = {version = "*", optional = true, markers = "extra == \"svg\""}
+
+[package.extras]
+svg = ["reportlab", "svglib"]
 
 [[package]]
 name = "exceptiongroup"
@@ -917,6 +1017,26 @@ docs = ["sphinx", "sphinx_rtd_theme"]
 testing = ["Django", "django-configurations (>=2.0)"]
 
 [[package]]
+name = "reportlab"
+version = "4.3.1"
+description = "The Reportlab Toolkit"
+optional = false
+python-versions = "<4,>=3.7"
+files = [
+    {file = "reportlab-4.3.1-py3-none-any.whl", hash = "sha256:0f37dd16652db3ef84363cf744632a28c38bd480d5bf94683466852d7bb678dd"},
+    {file = "reportlab-4.3.1.tar.gz", hash = "sha256:230f78b21667194d8490ac9d12958d5c14686352db7fbe03b95140fafdf5aa97"},
+]
+
+[package.dependencies]
+chardet = "*"
+pillow = ">=9.0.0"
+
+[package.extras]
+accel = ["rl_accel (>=0.9.0,<1.1)"]
+pycairo = ["freetype-py (>=2.3.0,<2.4)", "rlPyCairo (>=0.2.0,<1)"]
+renderpm = ["rl_renderPM (>=4.0.3,<4.1)"]
+
+[[package]]
 name = "requests"
 version = "2.32.3"
 description = "Python HTTP for Humans."
@@ -971,6 +1091,40 @@ files = [
 [package.extras]
 dev = ["build", "hatch"]
 doc = ["sphinx"]
+
+[[package]]
+name = "svglib"
+version = "1.5.1"
+description = "A pure-Python library for reading and converting SVG"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "svglib-1.5.1.tar.gz", hash = "sha256:3ae765d3a9409ee60c0fb4d24c2deb6a80617aa927054f5bcd7fc98f0695e587"},
+]
+
+[package.dependencies]
+cssselect2 = ">=0.2.0"
+lxml = "*"
+reportlab = "*"
+tinycss2 = ">=0.6.0"
+
+[[package]]
+name = "tinycss2"
+version = "1.4.0"
+description = "A tiny CSS parser"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "tinycss2-1.4.0-py3-none-any.whl", hash = "sha256:3a49cf47b7675da0b15d0c6e1df8df4ebd96e9394bb905a5775adb0d884c5289"},
+    {file = "tinycss2-1.4.0.tar.gz", hash = "sha256:10c0972f6fc0fbee87c3edb76549357415e94548c1ae10ebccdea16fb404a9b7"},
+]
+
+[package.dependencies]
+webencodings = ">=0.4"
+
+[package.extras]
+doc = ["sphinx", "sphinx_rtd_theme"]
+test = ["pytest", "ruff"]
 
 [[package]]
 name = "tomli"
@@ -1088,7 +1242,18 @@ h2 = ["h2 (>=4,<5)"]
 socks = ["pysocks (>=1.5.6,!=1.5.7,<2.0)"]
 zstd = ["zstandard (>=0.18.0)"]
 
+[[package]]
+name = "webencodings"
+version = "0.5.1"
+description = "Character encoding aliases for legacy web content"
+optional = false
+python-versions = "*"
+files = [
+    {file = "webencodings-0.5.1-py2.py3-none-any.whl", hash = "sha256:a0af1213f3c2226497a97e2b3aa01a7e4bee4f403f95be16fc9acd2947514a78"},
+    {file = "webencodings-0.5.1.tar.gz", hash = "sha256:b36a1c245f2d304965eb4e0a82848379241dc04b865afcc4aab16748587e1923"},
+]
+
 [metadata]
 lock-version = "2.0"
-python-versions = ">=3.9"
-content-hash = "0ff9ca24df1f0148d705bfd9afed147fe76ad03c21e2f6811219752cda47daaa"
+python-versions = ">=3.9,<4"
+content-hash = "c0cba9df9b10b35c8dd777301ed38820f5461d17806ef19960a77dc7810cb95f"
