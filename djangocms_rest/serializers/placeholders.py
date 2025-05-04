@@ -22,12 +22,9 @@ class PlaceholderRenderer(BaseRenderer):
             return False
         if self.request.user.is_staff:
             return False
-        # return True
-        # breaks fetching the placeholder content, caching implementation is not working as expected
-        # Reduce complexity and replace API caching with redis caching
-        return False
+        return True
 
-    def render_placeholder(self, placeholder, context, language, use_cache=False):
+    def render_placeholder(self, placeholder, context, language, use_cache=True):
         context.update({"request": self.request})
         if use_cache and placeholder.cache_placeholder:
             use_cache = self.placeholder_cache_is_enabled()

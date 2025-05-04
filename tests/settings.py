@@ -157,6 +157,15 @@ DATABASES = {
     }
 }
 
+CONTENT_CACHE_DURATION = 60
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+        'TIMEOUT': CONTENT_CACHE_DURATION,
+    }
+}
+
 ROOT_URLCONF = 'tests.urls'
 
 STATIC_URL = '/static/'

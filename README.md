@@ -16,6 +16,7 @@ read-only, REST/JSON API. It is based on the django rest framework (DRF) and sup
 🌍 **Internationalization (i18n)** – Supports available CMS languages<br>
 🌲 **Structured page tree** – Fetch the full page tree with metadata<br>
 📚 **Paginated page listing** – Retrieve pages as a list with pagination support<br>
+🔄 **Built-in caching** - Uses django cache backend for placeholder serialization/rendering<br>
 👀 **Preview support** – Access draft content using `djangocms-versioning` supporting
 permissions for authenticated staff user<br>
 🧬 **Typed API schema** – Auto-generate OpenAPI schemas for pages and plugins with
@@ -69,8 +70,6 @@ projects, this is often not the case.
 
 - Inline editing and content preview are currently only available in a structured view. (Solutions
   are currently being evaluated).
-- API-Caching has yet to be addressed properly and should be handled in the frontend app for the
-  time being.
 - Not all features of a standard Django CMS are available through the API (eg. templates and tags).
 - The API focuses on fetching plugin content and page structure as JSON data.
 - Website rendering is entirely decoupled and must be implemented in the frontend framework.
@@ -181,6 +180,18 @@ INSTALLED_APPS = [
     'rest_framework',
     ...
 ]
+```
+
+```python
+# Enabled Caching
+CONTENT_CACHE_DURATION = 60  # Overwrites default from django CMS
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',  # use redis/memcached etc.
+        'LOCATION': 'unique-snowflake',
+        'TIMEOUT': CONTENT_CACHE_DURATION,  # change accordingly
+    }
+}
 ```
 
 Add the API endpoints to your project's `urls.py`:

@@ -36,7 +36,7 @@ def render_html(request, placeholder, language):
         placeholder,
         context=context,
         language=language,
-        use_cache=False,
+        use_cache=True,
     )
     sekizai_blocks = context[get_varname()]
 
