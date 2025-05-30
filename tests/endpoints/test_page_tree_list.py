@@ -1,5 +1,6 @@
 from rest_framework.reverse import reverse
 
+from djangocms_rest.serializers.pages import PageMetaSerializer, PageTreeSerializer
 from tests.base import BaseCMSRestTestCase
 from tests.types import PAGE_TREE_META_FIELD_TYPES
 from tests.utils import assert_field_types
@@ -62,3 +63,16 @@ class PageTreeListAPITestCase(BaseCMSRestTestCase):
         self.client.force_login(self.user)
         response = self.client.get(reverse("preview-page-tree-list", kwargs={"language": "en"}))
         self.assertEqual(response.status_code, 200)
+
+    # TEST SERIALIZER EDGE CASES
+    def test_tree_serializer_type_error(self):
+        """Test that PageTreeSerializer raises TypeError when a tree is not a dict"""
+        # Create a mock dictionary with the tree parameter explicitly as a string
+        mock_kwargs = {"tree": "not_a_dict"}
+        with self.assertRaises(TypeError):
+            PageTreeSerializer(**mock_kwargs)
+
+    def test_page_meta_serializer_many_init(self):
+        """Test that PageMetaSerializer.many_init returns a PageTreeSerializer instance"""
+        serializer = PageMetaSerializer.many_init(context={})
+        self.assertIsInstance(serializer, PageTreeSerializer)

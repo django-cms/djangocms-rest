@@ -12,18 +12,21 @@ class BasePageSerializer(serializers.Serializer):
     page_title = serializers.CharField(max_length=255)
     menu_title = serializers.CharField(max_length=255)
     meta_description = serializers.CharField()
-    redirect = serializers.CharField(max_length=2048)
-    absolute_url = serializers.URLField(max_length=200)
-    placeholders: PlaceholderRelationSerializer()
+    redirect = serializers.CharField(max_length=2048, allow_null=True)
+    absolute_url = serializers.URLField(max_length=200, allow_blank=True)
     path = serializers.CharField(max_length=200)
     is_home = serializers.BooleanField()
     in_navigation = serializers.BooleanField()
     soft_root = serializers.BooleanField()
     template = serializers.CharField(max_length=100)
-    xframe_options = serializers.CharField(max_length=50)
-    limit_visibility_in_menu = serializers.BooleanField()
+    xframe_options = serializers.CharField(max_length=50, allow_blank=True)
+    limit_visibility_in_menu = serializers.BooleanField(default=False, allow_null=True)
     language = serializers.CharField(max_length=10)
     languages = serializers.ListSerializer(child=serializers.CharField(), allow_empty=True, required=False)
+    is_preview = serializers.BooleanField(default=False)
+    creation_date = serializers.DateTimeField()
+    changed_date = serializers.DateTimeField()
+
 
 class PreviewMixin:
     """Mixin to mark content as preview"""
@@ -34,7 +37,9 @@ class PreviewMixin:
 class BasePageContentMixin:
     def get_base_representation(self, page_content: PageContent) -> Dict:
         relative_url = page_content.page.get_path(page_content.language)
-        absolute_url = page_content.page.get_absolute_url(page_content.language)
+        absolute_url = page_content.page.get_absolute_url(page_content.language) or ""
+        xframe_options = str(page_content.xframe_options or "")
+        limit_visibility_in_menu = bool(page_content.limit_visibility_in_menu)
 
         return {
             "title": page_content.title,
@@ -45,8 +50,8 @@ class BasePageContentMixin:
             "in_navigation": page_content.in_navigation,
             "soft_root": page_content.soft_root,
             "template": page_content.template,
-            "xframe_options": page_content.xframe_options,
-            "limit_visibility_in_menu": page_content.limit_visibility_in_menu,
+            "xframe_options": xframe_options,
+            "limit_visibility_in_menu": limit_visibility_in_menu,
             "language": page_content.language,
             "path": relative_url,
             "absolute_url": absolute_url,
@@ -101,15 +106,17 @@ class PageMetaSerializer(BasePageSerializer, BasePageContentMixin):
             parent = instance.page.parent
             tree.setdefault(parent, []).append(instance)
 
-        # Prepare the child serializer with proper context.
+        # Prepare the child serializer with the proper context.
         kwargs["child"] = cls(context=context)
-        return PageTreeSerializer(tree, context=context, *args[1:], **kwargs)
+        return PageTreeSerializer(tree, *args[1:], **kwargs)
 
     def to_representation(self, page_content: PageContent) -> Dict:
         return self.get_base_representation(page_content)
 
 
 class PageContentSerializer(BasePageSerializer, BasePageContentMixin):
+    placeholders = PlaceholderRelationSerializer(many=True, required=False)
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.request = self.context.get("request")
@@ -141,6 +148,7 @@ class PageContentSerializer(BasePageSerializer, BasePageContentMixin):
 
 class PreviewPageContentSerializer(PageContentSerializer, PreviewMixin):
     """Serializer specifically for preview/draft page content"""
+    placeholders = PlaceholderRelationSerializer(many=True, required=False)
 
     def to_representation(self, page_content: PageContent) -> Dict:
         # Get placeholders directly from the page_content

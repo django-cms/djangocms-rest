@@ -13,21 +13,30 @@ PAGE_META_FIELD_TYPES = {
     "in_navigation": bool,
     "soft_root": bool,
     "template": str,
-    "xframe_options": (int, str),
-    "limit_visibility_in_menu": (str, type(None)),
+    "xframe_options": str,
+    "limit_visibility_in_menu": (bool, type(None)),
     "language": str,
     "path": str,
     "absolute_url": str,
     "is_home": bool,
     "languages": list,
     "is_preview": bool,
-    "creation_date": str,
-    "changed_date": str,
+    "creation_date": (str, "datetime"),
+    "changed_date": (str, "datetime"),
 }
 
-PAGE_CONTENT_FIELD_TYPES = {**PAGE_META_FIELD_TYPES, "placeholders": list}
-
 PAGE_TREE_META_FIELD_TYPES = {**PAGE_META_FIELD_TYPES, "children": list}
+
+PLACEHOLDER_RELATION_FIELD_TYPES = {
+    "content_type_id": int,
+    "object_id": int,
+    "slot": str,
+}
+
+PAGE_CONTENT_FIELD_TYPES = {
+    **PAGE_META_FIELD_TYPES,
+    "placeholders": [PLACEHOLDER_RELATION_FIELD_TYPES]
+}
 
 LANGUAGE_FIELD_TYPES = {
     "code": str,
@@ -43,6 +52,7 @@ PLACEHOLDER_FIELD_TYPES = {
     "label": str,
     "language": str,
     "content": list,
+    "html": str,
 }
 
 PLUGIN_FIELD_TYPES = {
