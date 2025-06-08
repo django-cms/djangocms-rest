@@ -180,12 +180,6 @@ INSTALLED_APPS = [
 ]
 ```
 
-Set up frontend protocol and caching in your `settings.py`:
-```python
-# Set frontend protocol
-FRONTEND_PROTOCOL = 'http'  # or 'https', needed for absolute URLs in API responses
-```
-
 ```python
 # Enabled Caching
 CONTENT_CACHE_DURATION = 60  # Overwrites default from django CMS
