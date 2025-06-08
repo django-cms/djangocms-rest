@@ -1,19 +1,15 @@
-import copy
 from cms.models import Page, PageContent, Placeholder
 from cms.utils.conf import get_languages
 from cms.utils.page_permissions import user_can_view_page
 from django.contrib.sites.shortcuts import get_current_site
-from django.http import Http404
 from rest_framework.exceptions import NotFound
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.permissions import IsAdminUser
 from rest_framework.request import Request
 from rest_framework.response import Response
 
 from djangocms_rest.permissions import (
     CanViewPage,
     CanViewPageContent,
-    IsAllowedLanguage,
     IsAllowedPublicLanguage,
 )
 from djangocms_rest.serializers.languages import LanguageSerializer
