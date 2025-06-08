@@ -10,7 +10,6 @@ from rest_framework.response import Response
 
 from djangocms_rest.permissions import (
     CanViewPage,
-    CanViewPageContent,
     IsAllowedPublicLanguage,
 )
 from djangocms_rest.serializers.languages import LanguageSerializer
