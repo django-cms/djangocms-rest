@@ -166,7 +166,7 @@ content available via the REST API.
 Install using pip:
 
 ```bash
-pip install git+https://github.com/fsbraun/djangocms-rest@main
+pip install git+https://github.com/django-cms/djangocms-rest@main
 ```
 
 Update your `INSTALLED_APPS` setting:
