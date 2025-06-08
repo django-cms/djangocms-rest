@@ -4,6 +4,7 @@ from cms.utils.page_permissions import user_can_view_page
 from django.contrib.sites.shortcuts import get_current_site
 from rest_framework.exceptions import NotFound
 from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.permissions import IsAdminUser
 from rest_framework.request import Request
 from rest_framework.response import Response
 
@@ -150,7 +151,7 @@ class PageDetailView(BaseAPIView):
 
 
 class PlaceholderDetailView(BaseAPIView):
-    permission_classes = [IsAllowedPublicLanguage, CanViewPageContent]
+    permission_classes = [IsAllowedPublicLanguage]
     serializer_class = PlaceholderSerializer
     content_manager = "objects"
 
@@ -198,6 +199,7 @@ class PlaceholderDetailView(BaseAPIView):
 
 class PreviewPlaceholderDetailView(PlaceholderDetailView):
     content_manager = "admin_manager"
+    permission_classes = [IsAdminUser]
 
 
 class PluginDefinitionView(BaseAPIView):
@@ -224,13 +226,16 @@ class PluginDefinitionView(BaseAPIView):
 class PreviewPageView(PageDetailView):
     content_getter = "get_admin_content"
     serializer_class = PreviewPageContentSerializer
+    permission_classes = [IsAdminUser, CanViewPage]
 
 
 class PreviewPageTreeListView(PageTreeListView):
     content_getter = "get_admin_content"
     serializer_class = PageMetaSerializer
+    permission_classes = [IsAdminUser, CanViewPage]
 
 
 class PreviewPageListView(PageListView):
     content_getter = "get_admin_content"
     serializer_class = PageMetaSerializer
+    permission_classes = [IsAdminUser, CanViewPage]
