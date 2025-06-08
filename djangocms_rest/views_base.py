@@ -18,6 +18,7 @@ class BaseAPIView(APIView):
         """
         return get_current_site(self.request)
 
+
 class BaseListAPIView(ListAPIView):
     """
     This is a base class for all list API views. It supports default pagination and sets the allowed methods to GET and OPTIONS.

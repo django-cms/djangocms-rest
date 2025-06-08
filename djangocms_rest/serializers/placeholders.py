@@ -67,7 +67,9 @@ class PlaceholderRenderer(BaseRenderer):
 
         return plugin_content
 
-    def render_plugins(self, placeholder: Placeholder, language: str, context: dict) -> list:
+    def render_plugins(
+        self, placeholder: Placeholder, language: str, context: dict
+    ) -> list:
         plugins = get_plugins(
             self.request,
             placeholder=placeholder,
@@ -79,7 +81,9 @@ class PlaceholderRenderer(BaseRenderer):
             for plugin in child_plugins:
                 plugin_content = render_plugin(plugin, context)
                 if getattr(plugin, "child_plugin_instances", None):
-                    plugin_content["children"] = render_children(plugin.child_plugin_instances)
+                    plugin_content["children"] = render_children(
+                        plugin.child_plugin_instances
+                    )
                 if plugin_content:
                     yield plugin_content
 
@@ -90,13 +94,15 @@ class PlaceholderSerializer(serializers.Serializer):
     slot = serializers.CharField()
     label = serializers.CharField()
     language = serializers.CharField()
-    content = serializers.ListSerializer(child=serializers.JSONField(), allow_empty=True, required=False)
+    content = serializers.ListSerializer(
+        child=serializers.JSONField(), allow_empty=True, required=False
+    )
     html = serializers.CharField(default="", required=False)
 
     def __init__(self, *args, **kwargs):
-        request = kwargs.pop('request', None)
-        placeholder = kwargs.pop('instance', None)
-        language = kwargs.pop('language', None)
+        request = kwargs.pop("request", None)
+        placeholder = kwargs.pop("instance", None)
+        language = kwargs.pop("language", None)
         super().__init__(*args, **kwargs)
 
         if placeholder and request and language:
@@ -116,6 +122,7 @@ class PlaceholderSerializer(serializers.Serializer):
             placeholder.label = placeholder.get_label()
             placeholder.language = language
             self.instance = placeholder
+
 
 class PlaceholderRelationSerializer(serializers.Serializer):
     content_type_id = serializers.IntegerField()

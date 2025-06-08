@@ -24,7 +24,9 @@ class BasePageSerializer(serializers.Serializer):
     xframe_options = serializers.CharField(max_length=50, allow_blank=True)
     limit_visibility_in_menu = serializers.BooleanField(default=False, allow_null=True)
     language = serializers.CharField(max_length=10)
-    languages = serializers.ListSerializer(child=serializers.CharField(), allow_empty=True, required=False)
+    languages = serializers.ListSerializer(
+        child=serializers.CharField(), allow_empty=True, required=False
+    )
     is_preview = serializers.BooleanField(default=False)
     application_namespace = serializers.CharField(max_length=200, allow_null=True)
     creation_date = serializers.DateTimeField()
@@ -41,7 +43,7 @@ class BasePageContentMixin:
     def get_base_representation(self, page_content: PageContent) -> Dict:
         request = getattr(self, "request", None)
         path = page_content.page.get_path(page_content.language)
-        absolute_url = get_absolute_frontend_url(request,path)
+        absolute_url = get_absolute_frontend_url(request, path)
         redirect = str(page_content.redirect or "")
         xframe_options = str(page_content.xframe_options or "")
         application_namespace = str(page_content.page.application_namespace or "")
@@ -82,7 +84,9 @@ class PageTreeSerializer(serializers.ListSerializer):
         serialized_data = self.child.to_representation(item)
         serialized_data["children"] = []
         if item.page in self.tree:
-            serialized_data["children"] = [self.tree_to_representation(child) for child in self.tree[item.page]]
+            serialized_data["children"] = [
+                self.tree_to_representation(child) for child in self.tree[item.page]
+            ]
         return serialized_data
 
     def to_representation(self, data: Dict) -> list[Dict]:
@@ -91,7 +95,9 @@ class PageTreeSerializer(serializers.ListSerializer):
 
 
 class PageMetaSerializer(BasePageSerializer, BasePageContentMixin):
-    children = serializers.ListSerializer(child=serializers.DictField(), required=False, default=[])
+    children = serializers.ListSerializer(
+        child=serializers.DictField(), required=False, default=[]
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -128,7 +134,10 @@ class PageContentSerializer(BasePageSerializer, BasePageContentMixin):
         self.request = self.context.get("request")
 
     def to_representation(self, page_content: PageContent) -> Dict:
-        declared_slots = [placeholder.slot for placeholder in page_content.page.get_declared_placeholders()]
+        declared_slots = [
+            placeholder.slot
+            for placeholder in page_content.page.get_declared_placeholders()
+        ]
         placeholders = [
             placeholder
             for placeholder in page_content.page.get_placeholders(page_content.language)

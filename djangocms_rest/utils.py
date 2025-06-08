@@ -31,11 +31,11 @@ def get_absolute_frontend_url(request: Request, path: str) -> str:
         An absolute URL formatted as a string.
     """
 
-    if path.startswith('/'):
+    if path.startswith("/"):
         raise ValueError(f"Path should not start with '/': {path}")
 
     site = get_current_site(request) if request else Site.objects.get(id=1)
-    domain = site.domain.rstrip('/')
+    domain = site.domain.rstrip("/")
     protocol = getattr(request, "scheme", "http")
 
     return f"{protocol}://{domain}/{path}"

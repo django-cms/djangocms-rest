@@ -7,7 +7,9 @@ from sekizai.context import SekizaiContext
 from sekizai.helpers import get_varname
 
 
-def render_plugin(instance: CMSPlugin, context: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+def render_plugin(
+    instance: CMSPlugin, context: Dict[str, Any]
+) -> Optional[Dict[str, Any]]:
     instance, plugin = instance.get_plugin_instance()
     if not instance:
         return None

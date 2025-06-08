@@ -1,80 +1,64 @@
 from django.urls import path
 
-from djangocms_rest.views import (
-    LanguageListView,
-    PageDetailView,
-    PageListView,
-    PageTreeListView,
-    PlaceholderDetailView,
-    PluginDefinitionView,
-    PreviewPageListView,
-    PreviewPageTreeListView,
-    PreviewPageView,
-    PreviewPlaceholderDetailView,
-)
+from . import views
 
 urlpatterns = [
     # Published content endpoints
     path(
         "languages/",
-        LanguageListView.as_view(),
+        views.LanguageListView.as_view(),
         name="language-list",
     ),
     path(
         "<slug:language>/pages-tree/",
-        PageTreeListView.as_view(),
+        views.PageTreeListView.as_view(),
         name="page-tree-list",
     ),
     path(
         "<slug:language>/pages-list/",
-        PageListView.as_view(),
+        views.PageListView.as_view(),
         name="page-list",
     ),
     path(
         "<slug:language>/pages-root/",
-        PageDetailView.as_view(),
+        views.PageDetailView.as_view(),
         name="page-root",
     ),
     path(
         "<slug:language>/pages/<path:path>/",
-        PageDetailView.as_view(),
+        views.PageDetailView.as_view(),
         name="page-detail",
     ),
     path(
         "<slug:language>/placeholders/<int:content_type_id>/<int:object_id>/<str:slot>/",
-        PlaceholderDetailView.as_view(),
+        views.PlaceholderDetailView.as_view(),
         name="placeholder-detail",
     ),
-    path(
-        'plugins/',
-         PluginDefinitionView.as_view(),
-         name='plugin-list'
-    ),
-
+    path("plugins/", views.PluginDefinitionView.as_view(), name="plugin-list"),
     # Preview content endpoints
     path(
         "preview/<slug:language>/pages-root/",
-        PreviewPageView.as_view(),
+        views.PreviewPageView.as_view(),
         name="preview-page-root",
     ),
     path(
         "preview/<slug:language>/pages-tree/",
-        PreviewPageTreeListView.as_view(),
+        views.PreviewPageTreeListView.as_view(),
         name="preview-page-tree-list",
     ),
     path(
         "preview/<slug:language>/pages-list/",
-        PreviewPageListView.as_view(),
+        views.PreviewPageListView.as_view(),
         name="preview-page-list",
     ),
     path(
         "preview/<slug:language>/pages/<path:path>/",
-        PreviewPageView.as_view(),
+        views.PreviewPageView.as_view(),
         name="preview-page",
     ),
     path(
         "preview/<slug:language>/placeholders/<int:content_type_id>/<int:object_id>/<str:slot>/",
-        PreviewPlaceholderDetailView.as_view(),
+        views.PreviewPlaceholderDetailView.as_view(),
         name="preview-placeholder-detail",
     ),
 ]
