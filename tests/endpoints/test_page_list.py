@@ -1,5 +1,6 @@
 from cms.models import PageContent
 from django.contrib.sites.models import Site
+from djangocms_rest.utils import get_site_filtered_queryset
 from rest_framework.reverse import reverse
 
 from tests.base import BaseCMSRestTestCase
@@ -23,9 +24,7 @@ class PageListAPITestCase(BaseCMSRestTestCase):
 
         # Get current site
         site = Site.objects.get_current()
-        expected_total = PageContent.objects.filter(
-            language="en", page__site=site
-        ).count()
+        expected_total = get_site_filtered_queryset(site).count()
 
         type_checks = PAGE_META_FIELD_TYPES
 
