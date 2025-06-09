@@ -246,7 +246,7 @@ REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": 'drf_spectacular.openapi.AutoSchema',
     ...,
 }
-````
+```
 
 Test endpoints and check expected response types: `http://localhost:8000/api/docs/`
 
