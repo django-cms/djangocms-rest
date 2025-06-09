@@ -10,6 +10,7 @@ from rest_framework.response import Response
 
 from djangocms_rest.permissions import (
     CanViewPage,
+    CanViewPlaceholder,
     IsAllowedPublicLanguage,
 )
 from djangocms_rest.serializers.languages import LanguageSerializer
@@ -148,7 +149,7 @@ class PageDetailView(BaseAPIView):
 
 
 class PlaceholderDetailView(BaseAPIView):
-    permission_classes = [IsAllowedPublicLanguage]
+    permission_classes = [IsAllowedPublicLanguage, CanViewPlaceholder]
     serializer_class = PlaceholderSerializer
     content_manager = "objects"
 

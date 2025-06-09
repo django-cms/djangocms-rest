@@ -1,4 +1,4 @@
-from cms.models import Page, PageContent
+from cms.models import Page, PageContent, Placeholder
 from cms.utils.i18n import get_language_tuple, get_languages
 from cms.utils.page_permissions import user_can_view_page
 from rest_framework.exceptions import NotFound
@@ -53,6 +53,30 @@ class CanViewPage(IsAllowedLanguage):
             return user_can_view_page(request.user, obj)
         return False
 
+
+class CanViewPlaceholder(BasePermission):
+    """
+    Object-level permission to check if the user is allowed to view Placeholder.
+    This is flaky because it only checks the Placeholder's source object's visibility,
+    and general view permission on that model. It only checks object-level permissions
+    for Placeholder instances that are linked to PageContent.
+    """
+
+    def has_object_permission(
+        self, request: Request, view: BaseAPIView, obj: Placeholder
+    ) -> bool:
+        """
+        Check if the object is a Placeholder instance and enforce page view permission
+        """
+        model = obj.content_type.model_class()
+        if issubclass(model, PageContent):
+            # If the object is a PageContent, check the page view permission
+            if not user_can_view_page(request.user, obj.page):
+                raise NotFound()
+        if model.objects.filter(id=obj.id).empty():
+            # If the object is not visible with the default manager, deny access
+            raise NotFound()
+        return True
 
 class CanViewPageContent(IsAllowedLanguage):
     """
