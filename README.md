@@ -239,6 +239,15 @@ urlpatterns = [
     ...
 ```
 
+Finally, add the schema class to the rest framework settings in `settings.py`:
+```python
+REST_FRAMEWORK = {
+    ...,
+    "DEFAULT_SCHEMA_CLASS": 'drf_spectacular.openapi.AutoSchema',
+    ...,
+}
+````
+
 Test endpoints and check expected response types: `http://localhost:8000/api/docs/`
 
 Fetch api schema as json/xml: `http://localhost:8000/api/schema/`
