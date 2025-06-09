@@ -1,4 +1,3 @@
-from cms.models import PageContent
 from django.contrib.sites.models import Site
 from djangocms_rest.utils import get_site_filtered_queryset
 from rest_framework.reverse import reverse
