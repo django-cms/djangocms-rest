@@ -10,7 +10,6 @@ from rest_framework.response import Response
 
 from djangocms_rest.permissions import (
     CanViewPage,
-    CanViewPlaceholder,
     IsAllowedPublicLanguage,
 )
 from djangocms_rest.serializers.languages import LanguageSerializer
@@ -149,7 +148,7 @@ class PageDetailView(BaseAPIView):
 
 
 class PlaceholderDetailView(BaseAPIView):
-    permission_classes = [IsAllowedPublicLanguage, CanViewPlaceholder]
+    permission_classes = [IsAllowedPublicLanguage]
     serializer_class = PlaceholderSerializer
     content_manager = "objects"
 
@@ -186,8 +185,15 @@ class PlaceholderDetailView(BaseAPIView):
 
         if source is None:
             raise NotFound()
+        else:
+            # TODO: Here should be a check for the source model's visibility
+            # For now, we only check pages
+            if isinstance(source, PageContent):
+                # If the object is a PageContent, check the page view permission
+                if not user_can_view_page(request.user, source.page):
+                    raise NotFound()
 
-        self.check_object_permissions(request, source)
+        self.check_object_permissions(request, placeholder)
 
         serializer = self.serializer_class(
             instance=placeholder, request=request, language=language, read_only=True
