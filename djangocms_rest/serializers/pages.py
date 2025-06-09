@@ -115,7 +115,10 @@ class PageMetaSerializer(BasePageSerializer, BasePageContentMixin):
             instances = []
         tree = {}
         for instance in instances:
-            parent = instance.page.parent
+            try:
+                parent = instance.page.parent
+            except AttributeError:
+                parent = instance.page.parent_page  # TODO: Remove when django CMS 4.1 is no longer supported
             tree.setdefault(parent, []).append(instance)
 
         # Prepare the child serializer with the proper context.
