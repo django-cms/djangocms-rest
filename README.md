@@ -1,5 +1,5 @@
 [![codecov](https://codecov.io/gh/django-cms/djangocms-rest/graph/badge.svg?token=RKQJL8L8BT)](https://codecov.io/gh/django-cms/djangocms-rest)
-[![djangocms5]( https://img.shields.io/badge/django%20CMS-5+-blue.svg)](https://www.django-cms.org/en/)
+[![djangocms5]( https://img.shields.io/badge/django%20CMS-4+-blue.svg)](https://www.django-cms.org/en/)
 
 # django CMS Headless Mode
 
@@ -11,7 +11,7 @@ read-only, REST/JSON API. It is based on the django rest framework (DRF) and sup
 
 **✨ Key Features**
 
-💫 **Django CMS 5 Support** – Latest version support (5.0.0a1)<br>
+💫 **Django CMS 4 and 5 Support** – Including latest version support (5.0)<br>
 🏢 **Multi-site support** – Supports Django sites<br>
 🌍 **Internationalization (i18n)** – Supports available CMS languages<br>
 🌲 **Structured page tree** – Fetch the full page tree with metadata<br>
