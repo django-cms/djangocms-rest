@@ -1,4 +1,4 @@
-from cms.models import Page, PageContent, Placeholder
+from cms.models import PageContent, Placeholder
 from cms.utils.conf import get_languages
 from cms.utils.page_permissions import user_can_view_page
 from django.contrib.sites.shortcuts import get_current_site
@@ -25,7 +25,7 @@ from djangocms_rest.serializers.plugins import (
     PLUGIN_DEFINITIONS,
     PluginDefinitionSerializer,
 )
-from djangocms_rest.utils import get_object
+from djangocms_rest.utils import get_object, get_site_filtered_queryset
 from djangocms_rest.views_base import BaseAPIView, BaseListAPIView
 
 try:
@@ -72,8 +72,7 @@ class PageListView(BaseListAPIView):
     def get_queryset(self):
         """Get queryset of pages for the given language."""
         language = self.kwargs["language"]
-        site = self.site
-        qs = Page.objects.filter(site=site) if hasattr(Page, "site") else Page.objects.filter(node__site=site)
+        qs = get_site_filtered_queryset(self.site)
 
         # Filter out pages which require login
         if self.request.user.is_anonymous:
@@ -99,8 +98,7 @@ class PageTreeListView(BaseAPIView):
 
     def get(self, request, language):
         """List of all pages on this site for a given language."""
-        site = self.site
-        qs = Page.objects.filter(site=site) if hasattr(Page, "site") else Page.objects.filter(node__site=site)
+        qs = get_site_filtered_queryset(self.site)
 
         # Filter out pages which require login
         if self.request.user.is_anonymous:
