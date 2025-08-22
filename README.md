@@ -67,10 +67,10 @@ projects, this is often not the case.
 **Limitations and considerations in headless mode:**
 
 - Inline editing and content preview are available as JSON views on both edit and preview mode. Turn
-  JSON rendering on and of using the `REST_JSON_RENDERING` setting.
-- Not all features of a standard Django CMS are available through the API (eg. templates and tags).
+  JSON rendering on and off using the `REST_JSON_RENDERING` setting.
 - The API focuses on fetching plugin content and page structure as JSON data.
 - Website rendering is entirely decoupled and must be implemented in the frontend framework.
+- Not (yet) all features of a standard Django CMS are available through the API (eg. Menu).
 
 ## Are there js packages for drop-in support of frontend editing in the javascript framework of my choice?
 

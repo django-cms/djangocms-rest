@@ -322,13 +322,25 @@ class RESTRenderer(ContentRenderer):
         )
 
         def serialize_children(child_plugins):
-            for plugin in child_plugins:
-                plugin_content = serialize_cms_plugin(plugin, context)
-                if getattr(plugin, "child_plugin_instances", None):
-                    plugin_content["children"] = serialize_children(
-                        plugin.child_plugin_instances
+            children_list = []
+            for child_plugin in child_plugins:
+                child_content = serialize_cms_plugin(child_plugin, context)
+                if getattr(child_plugin, "child_plugin_instances", None):
+                    child_content["children"] = serialize_children(
+                        child_plugin.child_plugin_instances
                     )
-                if plugin_content:
-                    yield plugin_content
+                if child_content:
+                    children_list.append(child_content)
+            return children_list
 
-        return list(serialize_children(plugins))
+        results = []
+        for plugin in plugins:
+            plugin_content = serialize_cms_plugin(plugin, context)
+            if getattr(plugin, "child_plugin_instances", None):
+                plugin_content["children"] = serialize_children(
+                    plugin.child_plugin_instances
+                )
+            if plugin_content:
+                results.append(plugin_content)
+        return results
+

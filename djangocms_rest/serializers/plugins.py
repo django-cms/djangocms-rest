@@ -185,7 +185,7 @@ class PluginDefinitionSerializer(serializers.Serializer):
         """
         definitions = {}
 
-        for plugin in plugin_pool.get_all_plugins():
+        for plugin in plugin_pool.plugins.values():
             # Use plugin's serializer_class or create a simple fallback
             serializer_cls = getattr(plugin, "serializer_class", None)
 
