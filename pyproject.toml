@@ -58,11 +58,16 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/fsbraun/djangocms-rest"
-Repository = "https://github.com/fsbraun/djangocms-rest"
+Homepage = "https://github.com/django-cms/djangocms-rest"
+Repository = "https://github.com/django-cms/djangocms-rest"
+
+
+[tool.setuptools]
+include-package-data = true
 
 [tool.setuptools.dynamic]
 version = {attr = "djangocms_rest.__version__"}
 
 [tool.setuptools.packages.find]
+where = ["."]
 include = ["djangocms_rest*"]
