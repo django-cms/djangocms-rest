@@ -1,5 +1,8 @@
-[![codecov](https://codecov.io/gh/django-cms/djangocms-rest/graph/badge.svg?token=RKQJL8L8BT)](https://codecov.io/gh/django-cms/djangocms-rest)
-[![djangocms5]( https://img.shields.io/badge/django%20CMS-4+-blue.svg)](https://www.django-cms.org/en/)
+[![Latest PyPI version](https://img.shields.io/pypi/v/djangocms-rest.svg?style=flat-square)](https://pypi.python.org/pypi/djangocms-rest)
+[![Test coverage](https://codecov.io/gh/django-cms/djangocms-rest/graph/badge.svg?token=RKQJL8L8BT)](https://codecov.io/gh/django-cms/djangocms-rest)
+[![Django versions](https://img.shields.io/pypi/frameworkversions/django/djangocms-rest.svg?style=flat-square)](https://pypi.python.org/pypi/djangocms-rest)
+[![django CMS versions](https://img.shields.io/pypi/frameworkversions/django-cms/djangocms-rest.svg?style=flat-square)](https://pypi.python.org/pypi/djangocms-rest)
+[![License](https://img.shields.io/github/license/django-cms/djangocms-rest.svg?style=flat-square)](https://pypi.python.org/pypi/djangocms-rest)
 
 # django CMS Headless Mode
 
