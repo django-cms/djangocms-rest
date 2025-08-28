@@ -2,6 +2,10 @@
 Changelog
 =========
 
+0.8.1
+=====
+* fix: Package data was missing from wheel
+
 0.8.0
 =====
 * fix: Update github actions and readme by @fsbraun in https://github.com/django-cms/djangocms-rest/pull/12
