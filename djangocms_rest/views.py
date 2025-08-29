@@ -1,10 +1,12 @@
 from typing import Any
 from django.contrib.sites.shortcuts import get_current_site
+from django.urls import reverse
 from django.utils.functional import lazy
 
 from cms.models import Page, PageContent, Placeholder
 from cms.utils.conf import get_languages
 from cms.utils.page_permissions import user_can_view_page
+from menus.base import NavigationNode
 
 from rest_framework.exceptions import NotFound
 from rest_framework.pagination import LimitOffsetPagination
@@ -23,7 +25,11 @@ from djangocms_rest.serializers.pages import (
 )
 from djangocms_rest.serializers.placeholders import PlaceholderSerializer
 from djangocms_rest.serializers.plugins import PluginDefinitionSerializer
-from djangocms_rest.utils import get_object, get_site_filtered_queryset
+from djangocms_rest.utils import (
+    get_object,
+    get_site_filtered_queryset,
+    select_by_api_endpoint,
+)
 from djangocms_rest.views_base import BaseAPIView, BaseListAPIView
 
 
@@ -145,6 +151,7 @@ class PageDetailView(BaseAPIView):
         site = self.site
         page = get_object(site, path)
         self.check_object_permissions(request, page)
+        request.current_page = page
 
         try:
             page_content = getattr(page, self.content_getter)(language, fallback=True)
@@ -251,7 +258,7 @@ class MenuView(BaseAPIView):
         self,
         request: Request,
         language: str,
-        path: str = "/",  # for menu-root endpoint
+        path: str = "",  # for menu-root endpoint
         from_level: int = 0,  # Defaults from django CMS' menus app
         to_level: int = 100,
         extra_inactive: int = 0,
@@ -259,13 +266,16 @@ class MenuView(BaseAPIView):
     ) -> Response:
         """Get the menu structure for a specific language and path."""
         menu = self.get_menu_structure(
-            language, path, from_level, to_level, extra_inactive, extra_active
+            request, language, path, from_level, to_level, extra_inactive, extra_active
         )
-        serializer = self.serializer_class(menu, many=True)
+        serializer = self.serializer_class(
+            menu, many=True, context={"request": request}
+        )
         return Response(serializer.data)
 
     def get_menu_structure(
         self,
+        request: Request,
         language: str,
         path: str,
         from_level: int,
@@ -275,7 +285,40 @@ class MenuView(BaseAPIView):
     ) -> list[dict[str, Any]]:
         """Get the menu structure for a specific language and path."""
         # Implement the logic to retrieve the menu structure
-        return []
+        from menus.templatetags.menu_tags import ShowMenu
+
+        # Create tag instance without calling __init__
+        tag_instance = ShowMenu.__new__(ShowMenu)
+
+        # Initialize minimal necessary attributes
+        tag_instance.kwargs = {}
+        tag_instance.blocks = {}
+
+        request.LANGUAGE_CODE = language
+        context = {"request": request}
+
+        request.current_page = get_object(self.site, path)
+        self.check_object_permissions(request, request.current_page)
+
+        if path == "":
+            api_endpoint = reverse("page-root", kwargs={"language": language})
+        else:
+            api_endpoint = reverse(
+                "page-detail", kwargs={"language": language, "path": path}
+            )
+        with select_by_api_endpoint(NavigationNode, api_endpoint):
+            context = tag_instance.get_context(
+                context,
+                from_level,
+                to_level,
+                extra_inactive,
+                extra_active,
+                template=None,
+                namespace=None,
+                root_id=None,
+                next_page=None,
+            )
+        return context.get("children", [])
 
 
 class PreviewPageView(PageDetailView):
