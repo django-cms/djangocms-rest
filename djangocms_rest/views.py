@@ -1,3 +1,4 @@
+from typing import Any
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.functional import lazy
 
@@ -13,6 +14,7 @@ from rest_framework.response import Response
 
 from djangocms_rest.permissions import CanViewPage, IsAllowedPublicLanguage
 from djangocms_rest.serializers.languages import LanguageSerializer
+from djangocms_rest.serializers.menus import NavigationNodeSerializer
 from djangocms_rest.serializers.pages import (
     PageContentSerializer,
     PageListSerializer,
@@ -239,6 +241,41 @@ class PluginDefinitionView(BaseAPIView):
             for plugin_type, definition in PLUGIN_DEFINITIONS.items()
         ]
         return Response(definitions)
+
+
+class MenuView(BaseAPIView):
+    permission_classes = [IsAllowedPublicLanguage]
+    serializer_class = NavigationNodeSerializer
+
+    def get(
+        self,
+        request: Request,
+        language: str,
+        path: str = "/",  # for menu-root endpoint
+        from_level: int = 0,  # Defaults from django CMS' menus app
+        to_level: int = 100,
+        extra_inactive: int = 0,
+        extra_active: int = 1000,
+    ) -> Response:
+        """Get the menu structure for a specific language and path."""
+        menu = self.get_menu_structure(
+            language, path, from_level, to_level, extra_inactive, extra_active
+        )
+        serializer = self.serializer_class(menu, many=True)
+        return Response(serializer.data)
+
+    def get_menu_structure(
+        self,
+        language: str,
+        path: str,
+        from_level: int,
+        to_level: int,
+        extra_inactive: int,
+        extra_active: int,
+    ) -> list[dict[str, Any]]:
+        """Get the menu structure for a specific language and path."""
+        # Implement the logic to retrieve the menu structure
+        return []
 
 
 class PreviewPageView(PageDetailView):

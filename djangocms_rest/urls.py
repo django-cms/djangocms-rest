@@ -36,6 +36,14 @@ urlpatterns = [
         name="placeholder-detail",
     ),
     path("plugins/", views.PluginDefinitionView.as_view(), name="plugin-list"),
+    # Menu endpoints
+    path("<slug:language>/menu-root/", views.MenuView.as_view(), name="menu"),
+    path("<slug:language>/menu/<path:path>/", views.MenuView.as_view(), name="menu"),
+    path(
+        "<slug:language>/menu/<path:path>/<int:from_level>/<int:to_level>/<int:extra_inactive>/<int:extra_active>/",
+        views.MenuView.as_view(),
+        name="menu",
+    ),
     # Preview content endpoints
     path(
         "preview/<slug:language>/pages-root/",
