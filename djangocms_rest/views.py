@@ -151,7 +151,6 @@ class PageDetailView(BaseAPIView):
         site = self.site
         page = get_object(site, path)
         self.check_object_permissions(request, page)
-        request.current_page = page
 
         try:
             page_content = getattr(page, self.content_getter)(language, fallback=True)
