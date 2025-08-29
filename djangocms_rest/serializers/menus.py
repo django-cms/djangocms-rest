@@ -36,7 +36,9 @@ class NavigationNodeSerializer(serializers.Serializer):
             "url": get_absolute_frontend_url(self.request, obj.url),
             "api_endpoint": get_absolute_frontend_url(self.request, obj.api_endpoint),
             "visible": obj.visible,
-            "selected": obj.selected,
+            "selected": obj.selected
+            or obj.attr.get("is_home", False)
+            and getattr(self.request, "is_home", False),
             "attr": obj.attr,
             "level": obj.level,
             "children": self.get_children(obj),

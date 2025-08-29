@@ -296,15 +296,17 @@ class MenuView(BaseAPIView):
         request.LANGUAGE_CODE = language
         context = {"request": request}
 
-        request.current_page = get_object(self.site, path)
         self.check_object_permissions(request, request.current_page)
 
         if path == "":
             api_endpoint = reverse("page-root", kwargs={"language": language})
-        else:
+            request.is_home = True  # Let serializer select the home page
+        if path:
             api_endpoint = reverse(
                 "page-detail", kwargs={"language": language, "path": path}
             )
+            request.current_page = get_object(self.site, path)
+
         with select_by_api_endpoint(NavigationNode, api_endpoint):
             context = tag_instance.get_context(
                 context,

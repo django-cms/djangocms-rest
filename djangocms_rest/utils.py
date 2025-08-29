@@ -77,7 +77,11 @@ def select_by_api_endpoint(target_class: type, api_endpoint: str):
     original = getattr(target_class, "is_selected")
 
     # Apply the patch
-    setattr(target_class, "is_selected", lambda self: self.api_endpoint == api_endpoint)
+    setattr(
+        target_class,
+        "is_selected",
+        lambda self, request: self.api_endpoint == api_endpoint,
+    )
 
     try:
         yield target_class
