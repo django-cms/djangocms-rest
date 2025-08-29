@@ -4,8 +4,10 @@ from django.conf import settings
 from django.urls import NoReverseMatch, reverse
 
 from cms.app_base import CMSAppConfig
-from cms.models import Page
+from cms.cms_menus import CMSMenu
+from cms.models import Page, PageContent
 from cms.utils.i18n import force_language, get_current_language
+from menus.base import NavigationNode
 
 
 try:
@@ -42,6 +44,33 @@ def get_file_api_endpoint(file):
     return file.url if file.is_public else None
 
 
+def patch_get_menu_node_for_page_content(method: callable) -> callable:
+    def inner(self, page_content: PageContent, *args, **kwargs):
+        node = method(self, page_content, *args, **kwargs)
+        node.api_endpoint = get_page_api_endpoint(
+            page_content.page,
+            page_content.language,
+        )
+        return node
+
+    return inner
+
+
+def add_api_endpoint(navigation_node: type[NavigationNode]):
+    """Add an API endpoint to the CMSNavigationNode."""
+    if not hasattr(navigation_node, "get_api_endpoint"):
+        navigation_node.api_endpoint = None
+        navigation_node.get_api_endpoint = lambda self: self.api_endpoint
+
+
+def patch_page_menu(menu: type[CMSMenu]):
+    """Patch the CMSMenu to use the REST API endpoint for pages."""
+    if hasattr(menu, "get_menu_node_for_page_content"):
+        menu.get_menu_node_for_page_content = patch_get_menu_node_for_page_content(
+            menu.get_menu_node_for_page_content
+        )
+
+
 class RESTToolbarMixin:
     """
     Mixin to add REST rendering capabilities to the CMS toolbar.
@@ -73,3 +102,5 @@ class RESTCMSConfig(CMSAppConfig):
 
     Page.add_to_class("get_api_endpoint", get_page_api_endpoint)
     File.add_to_class("get_api_endpoint", get_file_api_endpoint) if File else None
+    add_api_endpoint(NavigationNode)
+    patch_page_menu(CMSMenu)
