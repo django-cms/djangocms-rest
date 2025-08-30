@@ -1,6 +1,5 @@
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.functional import cached_property
-
 from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
 
@@ -17,7 +16,8 @@ class BaseAPIView(APIView):
         """
         Fetch and cache the current site and make it available to all views.
         """
-        return get_current_site(self.request)
+        site = getattr(self.request, "site", None)
+        return site if site is not None else get_current_site(self.request)
 
 
 class BaseListAPIView(ListAPIView):
@@ -30,4 +30,5 @@ class BaseListAPIView(ListAPIView):
         """
         Fetch and cache the current site and make it available to all views.
         """
-        return get_current_site(self.request)
+        site = getattr(self.request, "site", None)
+        return site if site is not None else get_current_site(self.request)
