@@ -21,7 +21,7 @@ urlpatterns = [
         name="page-list",
     ),
     path(
-        "<slug:language>/pages-root/",
+        "<slug:language>/pages/",
         views.PageDetailView.as_view(),
         name="page-root",
     ),
@@ -37,9 +37,9 @@ urlpatterns = [
     ),
     path("plugins/", views.PluginDefinitionView.as_view(), name="plugin-list"),
     # Menu endpoints
-    path("<slug:language>/menu-root/", views.MenuView.as_view(), name="menu"),
+    path("<slug:language>/menu/", views.MenuView.as_view(), name="menu"),
     path(
-        "<slug:language>/menu-root/<int:from_level>/<int:to_level>/<int:extra_inactive>/<int:extra_active>/",
+        "<slug:language>/menu/<int:from_level>/<int:to_level>/<int:extra_inactive>/<int:extra_active>/",
         views.MenuView.as_view(),
         name="menu",
     ),
@@ -51,11 +51,6 @@ urlpatterns = [
     ),
     # Preview content endpoints
     path(
-        "preview/<slug:language>/pages-root/",
-        views.PreviewPageView.as_view(),
-        name="preview-page-root",
-    ),
-    path(
         "preview/<slug:language>/pages-tree/",
         views.PreviewPageTreeListView.as_view(),
         name="preview-page-tree-list",
@@ -64,6 +59,11 @@ urlpatterns = [
         "preview/<slug:language>/pages-list/",
         views.PreviewPageListView.as_view(),
         name="preview-page-list",
+    ),
+    path(
+        "preview/<slug:language>/pages/",
+        views.PreviewPageView.as_view(),
+        name="preview-page-root",
     ),
     path(
         "preview/<slug:language>/pages/<path:path>/",

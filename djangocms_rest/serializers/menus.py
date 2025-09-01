@@ -14,7 +14,7 @@ class NavigationNodeSerializer(serializers.Serializer):
     visible = serializers.BooleanField()
     selected = serializers.BooleanField()
     attr = serializers.DictField(allow_null=True)
-    level = serializers.IntegerField()
+    level = serializers.IntegerField(allow_null=True)
     children = serializers.SerializerMethodField()
 
     def __init__(self, *args, **kwargs):

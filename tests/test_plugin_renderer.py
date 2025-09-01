@@ -178,7 +178,7 @@ class PlaceholdersAPITestCase(BaseCMSRestTestCase):
         # Test link plugin resolves link to page API endpoint
         self.assertContains(
             response,
-            '<span class="key">"page"</span>: <span class="str">"http://testserver/api/en/pages-root/"</span>',
+            '<span class="key">"page"</span>: <span class="str">"http://testserver/api/en/pages/"</span>',
         )
 
         # Test image plugin resolves image URL

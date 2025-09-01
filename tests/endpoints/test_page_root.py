@@ -8,7 +8,7 @@ from tests.utils import assert_field_types
 class PageRootAPITestCase(BaseCMSRestTestCase):
     def test_get(self):
         """
-        Test the page root endpoint ('/api/{language}/pages-root/').
+        Test the page root endpoint ('/api/{language}/pages/').
 
         Verifies:
         - Endpoint returns correct HTTP status code
