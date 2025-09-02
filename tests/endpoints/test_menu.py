@@ -7,7 +7,7 @@ from cms.models import Page
 
 
 class PageListAPITestCase(BaseCMSRestTestCase):
-    def test_get_menu_default(self):
+    def test_get_menu_no_children(self):
         """
         Test the menu endpoint (/api/{language}/menu/).
 
@@ -30,7 +30,7 @@ class PageListAPITestCase(BaseCMSRestTestCase):
             kwargs={
                 "language": "en",
                 "from_level": 0,
-                "to_level": 100,
+                "to_level": 0,
                 "extra_inactive": 0,
                 "extra_active": 100,
             },

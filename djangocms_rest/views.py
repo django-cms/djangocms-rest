@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
@@ -7,7 +9,7 @@ from cms.models import Page, PageContent, Placeholder
 from cms.utils.conf import get_languages
 from cms.utils.page_permissions import user_can_view_page
 from menus.base import NavigationNode
-from menus.templatetags.menu_tags import ShowMenu
+from menus.templatetags.menu_tags import ShowMenu, ShowSubMenu, ShowBreadcrumb
 
 
 from rest_framework.exceptions import NotFound
@@ -252,35 +254,39 @@ class MenuView(BaseAPIView):
     serializer_class = NavigationNodeSerializer
 
     tag = ShowMenu
+    return_key = "children"
 
     def get(
         self,
         request: Request,
         language: str,
         path: str = "",  # for menu-root endpoint
-        from_level: int = 0,  # Defaults from django CMS' menus app
-        to_level: int = 100,
-        extra_inactive: int = 0,
-        extra_active: int = 1000,
+        **kwargs: dict[str, Any],
     ) -> Response:
         """Get the menu structure for a specific language and path."""
-        menu = self.get_menu_structure(
-            request, language, path, from_level, to_level, extra_inactive, extra_active
-        )
+        self.populate_defaults(kwargs)
+        menu = self.get_menu_structure(request, language, path, **kwargs)
         serializer = self.serializer_class(
             menu, many=True, context={"request": request}
         )
         return Response(serializer.data)
+
+    def populate_defaults(self, kwargs: dict[str, Any]) -> None:
+        """Set default values for menu view parameters."""
+        kwargs.setdefault("from_level", 0)
+        kwargs.setdefault("to_level", 100)
+        kwargs.setdefault("extra_inactive", 0)
+        kwargs.setdefault("extra_active", 1000)
+        kwargs.setdefault("root_id", None)
+        kwargs.setdefault("namespace", None)
+        kwargs.setdefault("next_page", None)
 
     def get_menu_structure(
         self,
         request: Request,
         language: str,
         path: str,
-        from_level: int,
-        to_level: int,
-        extra_inactive: int,
-        extra_active: int,
+        **kwargs: dict[str, Any],
     ) -> list[dict[str, Any]]:
         """Get the menu structure for a specific language and path."""
         # Implement the logic to retrieve the menu structure
@@ -293,29 +299,39 @@ class MenuView(BaseAPIView):
         tag_instance.blocks = {}
 
         request.LANGUAGE_CODE = language
-        context = {"request": request}
-
+        request.current_page = get_object(self.site, path)
         self.check_object_permissions(request, request.current_page)
+        context = {"request": request}
 
         if path == "":
             api_endpoint = reverse("page-root", kwargs={"language": language})
-            request.is_home = True  # Let serializer select the home page
         else:
             api_endpoint = reverse(
                 "page-detail", kwargs={"language": language, "path": path}
             )
-            request.current_page = get_object(self.site, path)
 
         with select_by_api_endpoint(NavigationNode, api_endpoint):
             context = tag_instance.get_context(
                 context=context,
-                from_level=from_level,
-                to_level=to_level,
-                extra_inactive=extra_inactive,
-                extra_active=extra_active,
+                **kwargs,
                 template=None,
-                namespace=None,
-                root_id=None,
-                next_page=None,
             )
-        return context.get("children", [])
+        return context.get(self.return_key, [])
+
+
+class SubMenuView(MenuView):
+    tag = ShowSubMenu
+
+    def populate_defaults(self, kwargs: dict[str, Any]) -> None:
+        kwargs.setdefault("levels", 100)
+        kwargs.setdefault("root_level", None)
+        kwargs.setdefault("nephews", 100)
+
+
+class BreadcrumbView(MenuView):
+    tag = ShowBreadcrumb
+    return_key = "ancestors"
+
+    def populate_defaults(self, kwargs: dict[str, Any]) -> None:
+        kwargs.setdefault("start_level", 0)
+        kwargs.setdefault("only_visible", True)
