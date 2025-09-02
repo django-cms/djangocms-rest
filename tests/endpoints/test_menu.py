@@ -108,3 +108,40 @@ class PageListAPITestCase(BaseCMSRestTestCase):
 
         self.assertNotEqual(url1, url2)
         self.assertEqual(results1, results2)
+
+    def test_submenu(self):
+        # GET
+        url = reverse(
+            "submenu",
+            kwargs={
+                "language": "en",
+                "path": "page-2",
+            },
+        )
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        results = response.json()
+
+        self.assertEqual(len(results), 2)
+
+        self.assertEqual(results[0]["title"], "page 0")
+        self.assertEqual(results[1]["title"], "page 1")
+
+    def test_breadcrumbs(self):
+        # GET
+        url = reverse(
+            "breadcrumbs",
+            kwargs={
+                "language": "en",
+                "path": "page-2/page-0",
+            },
+        )
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        results = response.json()
+        self.assertEqual(len(results), 3)
+
+        self.assertEqual(results[0]["title"], "page 0")
+        self.assertEqual(results[1]["title"], "page 2")
+        self.assertEqual(results[2]["title"], "page 0")
