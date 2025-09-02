@@ -21,7 +21,6 @@ from djangocms_rest.serializers.pages import (
     PageContentSerializer,
     PageListSerializer,
     PageMetaSerializer,
-    PreviewPageContentSerializer,
 )
 from djangocms_rest.serializers.placeholders import PlaceholderSerializer
 from djangocms_rest.serializers.plugins import PluginDefinitionSerializer
@@ -84,7 +83,6 @@ class PageListView(BaseListAPIView):
     permission_classes = [IsAllowedPublicLanguage]
     serializer_class = PageListSerializer
     pagination_class = LimitOffsetPagination
-    content_getter = "get_content_obj"
 
     def get_queryset(self):
         """Get queryset of pages for the given language."""
@@ -111,7 +109,6 @@ class PageListView(BaseListAPIView):
 class PageTreeListView(BaseAPIView):
     permission_classes = [IsAllowedPublicLanguage]
     serializer_class = PageMetaSerializer
-    content_getter = "get_content_obj"
 
     def get(self, request, language):
         """List of all pages on this site for a given language."""
@@ -143,7 +140,6 @@ class PageTreeListView(BaseAPIView):
 class PageDetailView(BaseAPIView):
     permission_classes = [IsAllowedPublicLanguage, CanViewPage]
     serializer_class = PageContentSerializer
-    content_getter = "get_content_obj"
 
     def get(self, request: Request, language: str, path: str = "") -> Response:
         """Retrieve a page instance. The page instance includes the placeholders and
@@ -320,21 +316,3 @@ class MenuView(BaseAPIView):
                 next_page=None,
             )
         return context.get("children", [])
-
-
-class PreviewPageView(PageDetailView):
-    content_getter = "get_admin_content"
-    serializer_class = PreviewPageContentSerializer
-    permission_classes = [IsAdminUser, CanViewPage]
-
-
-class PreviewPageTreeListView(PageTreeListView):
-    content_getter = "get_admin_content"
-    serializer_class = PageMetaSerializer
-    permission_classes = [IsAdminUser, CanViewPage]
-
-
-class PreviewPageListView(PageListView):
-    content_getter = "get_admin_content"
-    serializer_class = PageMetaSerializer
-    permission_classes = [IsAdminUser, CanViewPage]

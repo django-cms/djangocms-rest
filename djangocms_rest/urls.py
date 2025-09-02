@@ -49,30 +49,4 @@ urlpatterns = [
         views.MenuView.as_view(),
         name="menu",
     ),
-    # Preview content endpoints
-    path(
-        "preview/<slug:language>/pages-tree/",
-        views.PreviewPageTreeListView.as_view(),
-        name="preview-page-tree-list",
-    ),
-    path(
-        "preview/<slug:language>/pages-list/",
-        views.PreviewPageListView.as_view(),
-        name="preview-page-list",
-    ),
-    path(
-        "preview/<slug:language>/pages/",
-        views.PreviewPageView.as_view(),
-        name="preview-page-root",
-    ),
-    path(
-        "preview/<slug:language>/pages/<path:path>/",
-        views.PreviewPageView.as_view(),
-        name="preview-page",
-    ),
-    path(
-        "preview/<slug:language>/placeholders/<int:content_type_id>/<int:object_id>/<str:slot>/",
-        views.PreviewPlaceholderDetailView.as_view(),
-        name="preview-placeholder-detail",
-    ),
 ]

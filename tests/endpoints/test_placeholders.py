@@ -171,7 +171,7 @@ class PlaceholdersAPITestCase(BaseCMSRestTestCase):
         # GET PREVIEW
         response = self.client.get(
             reverse(
-                "preview-placeholder-detail",
+                "placeholder-detail",
                 kwargs={
                     "language": "en",
                     "content_type_id": self.page_content_type.id,
@@ -179,6 +179,7 @@ class PlaceholdersAPITestCase(BaseCMSRestTestCase):
                     "slot": "content",
                 },
             )
+            + "?preview"
         )
         self.assertEqual(response.status_code, 403)
 
@@ -187,7 +188,7 @@ class PlaceholdersAPITestCase(BaseCMSRestTestCase):
         self.client.force_login(self.user)
         response = self.client.get(
             reverse(
-                "preview-placeholder-detail",
+                "placeholder-detail",
                 kwargs={
                     "language": "en",
                     "content_type_id": self.page_content_type.id,
@@ -195,6 +196,7 @@ class PlaceholdersAPITestCase(BaseCMSRestTestCase):
                     "slot": "content",
                 },
             )
+            + "?preview"
         )
         self.assertEqual(response.status_code, 200)
 
