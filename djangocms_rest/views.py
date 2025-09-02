@@ -297,7 +297,7 @@ class MenuView(BaseAPIView):
         if path == "":
             api_endpoint = reverse("page-root", kwargs={"language": language})
             request.is_home = True  # Let serializer select the home page
-        if path:
+        else:
             api_endpoint = reverse(
                 "page-detail", kwargs={"language": language, "path": path}
             )
