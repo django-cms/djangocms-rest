@@ -317,14 +317,7 @@ preview content.
 To determine permissions `user_can_view_page()` from djangocms is used, usually editors with
 `is_staff` are allowed to view draft content.
 
-| Private Endpoints                                                                  | Description                                                                                                        |
-|:-----------------------------------------------------------------------------------|:-------------------------------------------------------------------------------------------------------------------|
-| `/api/preview/{language}/pages`                                               | Fetch the latest draft content for the root page.                                                                  |
-| `/api/preview/{language}/pages-tree`                                               | Fetch the page tree including unpublished pages.                                                                   |
-| `/api/preview/{language}/pages-list`                                               | Fetch a paginated list including unpublished pages.                                                                |
-| `/api/preview/{language}/pages/{path}`                                             | Fetch the latest draft content from a published or unpublished page, including latest unpublished content objects. |
-| `/api/preview/{language}/placeholders/`<br/>`{content_type_id}/{object_id}/{slot}` | Fetch the latest draft content objects for the given language.                                                     |
-|                                                                                    |
+Just add the `?preview` GET parameter to the above page, page-tree, or page-list endpoints.
 
 ### Sample API-Response: api/{en}/pages/{sub}/
 

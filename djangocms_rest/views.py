@@ -9,7 +9,7 @@ from cms.models import Page, PageContent, Placeholder
 from cms.utils.conf import get_languages
 from cms.utils.page_permissions import user_can_view_page
 from menus.base import NavigationNode
-from menus.templatetags.menu_tags import ShowMenu, ShowSubMenu, ShowBreadcrumb
+from menus.templatetags.menu_tags import ShowBreadcrumb, ShowMenu, ShowSubMenu
 
 
 from rest_framework.exceptions import NotFound
