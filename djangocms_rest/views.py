@@ -7,6 +7,8 @@ from cms.models import Page, PageContent, Placeholder
 from cms.utils.conf import get_languages
 from cms.utils.page_permissions import user_can_view_page
 from menus.base import NavigationNode
+from menus.templatetags.menu_tags import ShowMenu
+
 
 from rest_framework.exceptions import NotFound
 from rest_framework.pagination import LimitOffsetPagination
@@ -249,6 +251,8 @@ class MenuView(BaseAPIView):
     permission_classes = [IsAllowedPublicLanguage]
     serializer_class = NavigationNodeSerializer
 
+    tag = ShowMenu
+
     def get(
         self,
         request: Request,
@@ -280,10 +284,9 @@ class MenuView(BaseAPIView):
     ) -> list[dict[str, Any]]:
         """Get the menu structure for a specific language and path."""
         # Implement the logic to retrieve the menu structure
-        from menus.templatetags.menu_tags import ShowMenu
 
         # Create tag instance without calling __init__
-        tag_instance = ShowMenu.__new__(ShowMenu)
+        tag_instance = self.tag.__new__(self.tag)
 
         # Initialize minimal necessary attributes
         tag_instance.kwargs = {}

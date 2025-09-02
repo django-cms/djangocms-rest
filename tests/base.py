@@ -21,7 +21,13 @@ class BaseCMSRestTestCase(RESTTestCase):
         is_first: bool = True,
     ):
         new_pages = [
-            create_page(f"page {i}", language="en", template="INHERIT", parent=parent)
+            create_page(
+                f"page {i}",
+                language="en",
+                template="INHERIT",
+                parent=parent,
+                in_navigation=True,
+            )
             for i in range(page_list if isinstance(page_list, int) else len(page_list))
         ]
 
