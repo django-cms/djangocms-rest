@@ -308,11 +308,11 @@ class MenuView(BaseAPIView):
 
         with select_by_api_endpoint(NavigationNode, api_endpoint):
             context = tag_instance.get_context(
-                context,
-                from_level,
-                to_level,
-                extra_inactive,
-                extra_active,
+                context=context,
+                from_level=from_level,
+                to_level=to_level,
+                extra_inactive=extra_inactive,
+                extra_active=extra_active,
                 template=None,
                 namespace=None,
                 root_id=None,

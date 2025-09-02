@@ -25,7 +25,16 @@ class PageListAPITestCase(BaseCMSRestTestCase):
         expected_length = Page.objects.filter(site=site, parent=None).count()
 
         # GET
-        url = reverse("menu", kwargs={"language": "en"})
+        url = reverse(
+            "menu",
+            kwargs={
+                "language": "en",
+                "from_level": 0,
+                "to_level": 100,
+                "extra_inactive": 0,
+                "extra_active": 100,
+            },
+        )
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         results = response.json()
@@ -43,9 +52,14 @@ class PageListAPITestCase(BaseCMSRestTestCase):
         self.assertEqual(results[1]["children"], [])
         self.assertEqual(results[2]["children"], [])
 
-    def x_test_get_menu_with_children(self):
+        # Selected: Root page
+        self.assertTrue(results[0]["selected"])
+        self.assertFalse(results[1]["selected"])
+        self.assertFalse(results[2]["selected"])
+
+    def test_get_menu_with_children(self):
         """
-        Test the menu endpoint (/api/{language}/menu/) with child pages.
+        Test the menu endpoint (/api/{language}/menu/{path}/) with child pages.
 
         Verifies:
         - Child pages are included in the response
@@ -57,6 +71,11 @@ class PageListAPITestCase(BaseCMSRestTestCase):
             "menu",
             kwargs={
                 "language": "en",
+                "path": "page-2",
+                "from_level": 0,
+                "to_level": 100,
+                "extra_inactive": 0,
+                "extra_active": 100,
             },
         )
         response = self.client.get(url)
@@ -66,5 +85,26 @@ class PageListAPITestCase(BaseCMSRestTestCase):
 
         # Check if the child page is included
         self.assertIn("children", results[0])
-        self.assertEqual(len(results[0]["children"]), 1)
-        self.assertEqual(results[0]["children"][0]["title"], "Child Page")
+        self.assertEqual(len(results[2]["children"]), 2)
+        self.assertEqual(results[2]["children"][0]["title"], "page 0")
+
+    def test_default_levels(self):
+        url1 = reverse(
+            "menu",
+            kwargs={"language": "en"},
+        )
+        url2 = reverse(
+            "menu",
+            kwargs={
+                "language": "en",
+                "from_level": 0,
+                "to_level": 100,
+                "extra_inactive": 0,
+                "extra_active": 1000,
+            },
+        )
+        results1 = self.client.get(url1).json()
+        results2 = self.client.get(url2).json()
+
+        self.assertNotEqual(url1, url2)
+        self.assertEqual(results1, results2)
