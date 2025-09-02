@@ -7,7 +7,7 @@ from cms.app_base import CMSAppConfig
 from cms.cms_menus import CMSMenu
 from cms.models import Page, PageContent
 from cms.utils.i18n import force_language, get_current_language
-from menus.base import NavigationNode
+from menus import base
 
 
 try:
@@ -56,19 +56,39 @@ def patch_get_menu_node_for_page_content(method: callable) -> callable:
     return inner
 
 
-def add_api_endpoint(navigation_node: type[NavigationNode]):
-    """Add an API endpoint to the CMSNavigationNode."""
-    if not hasattr(navigation_node, "get_api_endpoint"):
-        navigation_node.api_endpoint = None
-        navigation_node.get_api_endpoint = lambda self: self.api_endpoint
-
-
 def patch_page_menu(menu: type[CMSMenu]):
     """Patch the CMSMenu to use the REST API endpoint for pages."""
     if hasattr(menu, "get_menu_node_for_page_content"):
         menu.get_menu_node_for_page_content = patch_get_menu_node_for_page_content(
             menu.get_menu_node_for_page_content
         )
+
+
+class NavigationNodeMixin:
+    """Mixin to add API endpoint and selection logic to NavigationNode."""
+
+    def get_api_endpoint(self):
+        """Get the API endpoint for the navigation node."""
+        return self.api_endpoint
+
+    def is_selected(self, request):
+        """Check if the navigation node is selected."""
+        return (
+            self.api_endpoint == request.api_endpoint
+            if hasattr(request, "api_endpoint")
+            else super().is_selected(request)
+        )
+
+
+def add_api_endpoint(navigation_node: type[base.NavigationNode]):
+    """Add an API endpoint to the CMSNavigationNode."""
+    if not issubclass(navigation_node, NavigationNodeMixin):
+        navigation_node = type(
+            f"{navigation_node.__name__}WithAPI",
+            (navigation_node, NavigationNodeMixin),
+            {},
+        )
+    return navigation_node
 
 
 class RESTToolbarMixin:
@@ -102,5 +122,5 @@ class RESTCMSConfig(CMSAppConfig):
 
     Page.add_to_class("get_api_endpoint", get_page_api_endpoint)
     File.add_to_class("get_api_endpoint", get_file_api_endpoint) if File else None
-    add_api_endpoint(NavigationNode)
+    base.NavigationNode = add_api_endpoint(base.NavigationNode)
     patch_page_menu(CMSMenu)

@@ -2,7 +2,6 @@ from django.contrib.sites.models import Site
 from django.core.exceptions import FieldError
 from django.db.models import QuerySet
 from django.http import Http404
-from contextlib import contextmanager
 
 from cms.models import Page, PageUrl
 
@@ -55,36 +54,3 @@ def get_absolute_frontend_url(request: Request, path: str) -> str:
     if not path.startswith("/"):
         path = f"/{path}"
     return f"{protocol}://{domain}{path}"
-
-
-@contextmanager
-def select_by_api_endpoint(target_class: type, api_endpoint: str):
-    """
-    Context manager that temporarily patches attributes on a class.
-
-    Args:
-        target_class: The class to patch
-        **patches: Keyword arguments where keys are attribute names and values are the new values
-
-    Example:
-        with patch_class(MyClass, some_method=lambda self: "patched"):
-            # MyClass.some_method is now patched
-            instance = MyClass()
-            assert instance.some_method() == "patched"
-        # MyClass.some_method is restored to original
-    """
-    # Store original method
-    original = getattr(target_class, "is_selected")
-
-    # Apply the patch
-    setattr(
-        target_class,
-        "is_selected",
-        lambda self, request: self.api_endpoint == api_endpoint,
-    )
-
-    try:
-        yield target_class
-    finally:
-        # Restore original values
-        setattr(target_class, "is_selected", original)

@@ -8,7 +8,6 @@ from django.utils.functional import lazy
 from cms.models import Page, PageContent, Placeholder
 from cms.utils.conf import get_languages
 from cms.utils.page_permissions import user_can_view_page
-from menus.base import NavigationNode
 from menus.templatetags.menu_tags import ShowBreadcrumb, ShowMenu, ShowSubMenu
 
 
@@ -31,7 +30,6 @@ from djangocms_rest.serializers.plugins import PluginDefinitionSerializer
 from djangocms_rest.utils import (
     get_object,
     get_site_filtered_queryset,
-    select_by_api_endpoint,
 )
 from djangocms_rest.views_base import BaseAPIView, BaseListAPIView
 
@@ -298,11 +296,6 @@ class MenuView(BaseAPIView):
         tag_instance.kwargs = {}
         tag_instance.blocks = {}
 
-        request.LANGUAGE_CODE = language
-        request.current_page = get_object(self.site, path)
-        self.check_object_permissions(request, request.current_page)
-        context = {"request": request}
-
         if path == "":
             api_endpoint = reverse("page-root", kwargs={"language": language})
         else:
@@ -310,12 +303,17 @@ class MenuView(BaseAPIView):
                 "page-detail", kwargs={"language": language, "path": path}
             )
 
-        with select_by_api_endpoint(NavigationNode, api_endpoint):
-            context = tag_instance.get_context(
-                context=context,
-                **kwargs,
-                template=None,
-            )
+        request.api_endpoint = api_endpoint
+        request.LANGUAGE_CODE = language
+        request.current_page = get_object(self.site, path)
+        self.check_object_permissions(request, request.current_page)
+        context = {"request": request}
+
+        context = tag_instance.get_context(
+            context=context,
+            **kwargs,
+            template=None,
+        )
         return context.get(self.return_key, [])
 
 
