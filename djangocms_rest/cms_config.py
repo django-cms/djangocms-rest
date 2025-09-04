@@ -80,14 +80,14 @@ class NavigationNodeMixin:
         )
 
 
+class NavigationNodeWithAPI(NavigationNodeMixin, base.NavigationNode):
+    pass
+
+
 def add_api_endpoint(navigation_node: type[base.NavigationNode]):
     """Add an API endpoint to the CMSNavigationNode."""
     if not issubclass(navigation_node, NavigationNodeMixin):
-        navigation_node = type(
-            f"{navigation_node.__name__}WithAPI",
-            (navigation_node, NavigationNodeMixin),
-            {},
-        )
+        navigation_node = NavigationNodeWithAPI
     return navigation_node
 
 
@@ -122,5 +122,6 @@ class RESTCMSConfig(CMSAppConfig):
 
     Page.add_to_class("get_api_endpoint", get_page_api_endpoint)
     File.add_to_class("get_api_endpoint", get_file_api_endpoint) if File else None
+
     base.NavigationNode = add_api_endpoint(base.NavigationNode)
     patch_page_menu(CMSMenu)
