@@ -81,6 +81,8 @@ class NavigationNodeMixin:
 
 
 class NavigationNodeWithAPI(NavigationNodeMixin, base.NavigationNode):
+    # NavigationNodeWithAPI must be defined statically at the module level
+    # to allow it being pickled for cache
     pass
 
 
