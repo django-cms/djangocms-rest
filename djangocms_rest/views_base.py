@@ -1,6 +1,5 @@
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.functional import cached_property
-
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAdminUser
 from rest_framework.views import APIView
@@ -18,7 +17,8 @@ class BaseAPIMixin:
         """
         Fetch and cache the current site and make it available to all views.
         """
-        return get_current_site(self.request)
+        site = getattr(self.request, "site", None)
+        return site if site is not None else get_current_site(self.request)
 
     @property
     def content_getter(self):
@@ -46,5 +46,4 @@ class BaseListAPIView(BaseAPIMixin, ListAPIView):
     """
     This is a base class for all list API views. It supports default pagination and sets the allowed methods to GET and OPTIONS.
     """
-
     pass

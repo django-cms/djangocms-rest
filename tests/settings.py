@@ -19,9 +19,9 @@ MIGRATION_MODULES = DisableMigrations()
 SECRET_KEY = "djangocms-text-test-suite"
 
 INSTALLED_APPS = [
+    "django.contrib.sites",
     "django.contrib.contenttypes",
     "django.contrib.auth",
-    "django.contrib.sites",
     "django.contrib.sessions",
     "django.contrib.admin",
     "django.contrib.messages",
@@ -40,6 +40,7 @@ MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
+    "djangocms_rest.middleware.SiteContextMiddleware",
     "cms.middleware.user.CurrentUserMiddleware",
     "cms.middleware.page.CurrentPageMiddleware",
     "cms.middleware.toolbar.ToolbarMiddleware",
