@@ -21,7 +21,7 @@ urlpatterns = [
         name="page-list",
     ),
     path(
-        "<slug:language>/pages-root/",
+        "<slug:language>/pages/",
         views.PageDetailView.as_view(),
         name="page-root",
     ),
@@ -36,30 +36,81 @@ urlpatterns = [
         name="placeholder-detail",
     ),
     path("plugins/", views.PluginDefinitionView.as_view(), name="plugin-list"),
-    # Preview content endpoints
+    # Menu endpoints
+    path("<slug:language>/menu/", views.MenuView.as_view(), name="menu"),
     path(
-        "preview/<slug:language>/pages-root/",
-        views.PreviewPageView.as_view(),
-        name="preview-page-root",
+        "<slug:language>/menu/<int:from_level>/<int:to_level>/<int:extra_inactive>/<int:extra_active>/",
+        views.MenuView.as_view(),
+        name="menu",
     ),
     path(
-        "preview/<slug:language>/pages-tree/",
-        views.PreviewPageTreeListView.as_view(),
-        name="preview-page-tree-list",
+        "<slug:language>/menu/<int:from_level>/<int:to_level>/<int:extra_inactive>/<int:extra_active>/<path:path>/",
+        views.MenuView.as_view(),
+        name="menu",
     ),
     path(
-        "preview/<slug:language>/pages-list/",
-        views.PreviewPageListView.as_view(),
-        name="preview-page-list",
+        "<slug:language>/menu/<slug:root_id>/<int:from_level>/<int:to_level>/<int:extra_inactive>/<int:extra_active>/<path:path>/",
+        views.MenuView.as_view(),
+        name="menu",
     ),
     path(
-        "preview/<slug:language>/pages/<path:path>/",
-        views.PreviewPageView.as_view(),
-        name="preview-page",
+        "<slug:language>/submenu/<int:levels>/<int:root_level>/<int:nephews>/<path:path>/",
+        views.SubMenuView.as_view(),
+        name="submenu",
     ),
     path(
-        "preview/<slug:language>/placeholders/<int:content_type_id>/<int:object_id>/<str:slot>/",
-        views.PreviewPlaceholderDetailView.as_view(),
-        name="preview-placeholder-detail",
+        "<slug:language>/submenu/<int:levels>/<int:root_level>/<int:nephews>/",
+        views.SubMenuView.as_view(),
+        name="submenu",
+    ),
+    path(
+        "<slug:language>/submenu/<int:levels>/<int:root_level>/<path:path>/",
+        views.SubMenuView.as_view(),
+        name="submenu",
+    ),
+    path(
+        "<slug:language>/submenu/<int:levels>/<int:root_level>/",
+        views.SubMenuView.as_view(),
+        name="submenu",
+    ),
+    path(
+        "<slug:language>/submenu/<int:levels>/<path:path>/",
+        views.SubMenuView.as_view(),
+        name="submenu",
+    ),
+    path(
+        "<slug:language>/submenu/<int:levels>/",
+        views.SubMenuView.as_view(),
+        name="submenu",
+    ),
+    path(
+        "<slug:language>/submenu/<path:path>/",
+        views.SubMenuView.as_view(),
+        name="submenu",
+    ),
+    path(
+        "<slug:language>/submenu/",
+        views.SubMenuView.as_view(),
+        name="submenu",
+    ),
+    path(
+        "<slug:language>/breadcrumbs/<int:start_level>/<path:path>/",
+        views.BreadcrumbView.as_view(),
+        name="breadcrumbs",
+    ),
+    path(
+        "<slug:language>/breadcrumbs/<int:start_level>/",
+        views.BreadcrumbView.as_view(),
+        name="breadcrumbs",
+    ),
+    path(
+        "<slug:language>/breadcrumbs/<path:path>/",
+        views.BreadcrumbView.as_view(),
+        name="breadcrumbs",
+    ),
+    path(
+        "<slug:language>/breadcrumbs/",
+        views.BreadcrumbView.as_view(),
+        name="breadcrumbs",
     ),
 ]

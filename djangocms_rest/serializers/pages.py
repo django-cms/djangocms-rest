@@ -34,13 +34,11 @@ class BasePageSerializer(serializers.Serializer):
     changed_date = serializers.DateTimeField()
 
 
-class PreviewMixin:
-    """Mixin to mark content as preview"""
-
-    is_preview = True
-
-
 class BasePageContentMixin:
+    @property
+    def is_preview(self):
+        return "preview" in self.request.GET
+
     def get_base_representation(self, page_content: PageContent) -> dict:
         request = getattr(self, "request", None)
         path = page_content.page.get_path(page_content.language)
@@ -150,7 +148,7 @@ class PageContentSerializer(BasePageSerializer, BasePageContentMixin):
         ]
         placeholders = [
             placeholder
-            for placeholder in page_content.page.get_placeholders(page_content.language)
+            for placeholder in page_content.placeholders.all()
             if placeholder.slot in declared_slots
         ]
 
@@ -169,35 +167,6 @@ class PageContentSerializer(BasePageSerializer, BasePageContentMixin):
             language=page_content.language,
             many=True,
             context={"request": self.request},
-        ).data
-        return data
-
-
-class PreviewPageContentSerializer(PageContentSerializer, PreviewMixin):
-    """Serializer specifically for preview/draft page content"""
-
-    placeholders = PlaceholderRelationSerializer(many=True, required=False)
-
-    def to_representation(self, page_content: PageContent) -> dict:
-        # Get placeholders directly from the page_content
-        # This avoids the extra query to get_declared_placeholders
-        placeholders = page_content.placeholders.all()
-
-        placeholders_data = [
-            {
-                "content_type_id": placeholder.content_type_id,
-                "object_id": placeholder.object_id,
-                "slot": placeholder.slot,
-            }
-            for placeholder in placeholders
-        ]
-
-        data = self.get_base_representation(page_content)
-        data["placeholders"] = PlaceholderRelationSerializer(
-            placeholders_data,
-            language=page_content.language,
-            context={"request": self.request},
-            many=True,
         ).data
         return data
 

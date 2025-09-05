@@ -1,9 +1,15 @@
+from __future__ import annotations
+
+from typing import Any
 from django.contrib.sites.shortcuts import get_current_site
+from django.urls import reverse
 from django.utils.functional import lazy
 
 from cms.models import Page, PageContent, Placeholder
 from cms.utils.conf import get_languages
 from cms.utils.page_permissions import user_can_view_page
+from menus.templatetags.menu_tags import ShowBreadcrumb, ShowMenu, ShowSubMenu
+
 
 from rest_framework.exceptions import NotFound
 from rest_framework.pagination import LimitOffsetPagination
@@ -13,15 +19,18 @@ from rest_framework.response import Response
 
 from djangocms_rest.permissions import CanViewPage, IsAllowedPublicLanguage
 from djangocms_rest.serializers.languages import LanguageSerializer
+from djangocms_rest.serializers.menus import NavigationNodeSerializer
 from djangocms_rest.serializers.pages import (
     PageContentSerializer,
     PageListSerializer,
     PageMetaSerializer,
-    PreviewPageContentSerializer,
 )
 from djangocms_rest.serializers.placeholders import PlaceholderSerializer
 from djangocms_rest.serializers.plugins import PluginDefinitionSerializer
-from djangocms_rest.utils import get_object, get_site_filtered_queryset
+from djangocms_rest.utils import (
+    get_object,
+    get_site_filtered_queryset,
+)
 from djangocms_rest.views_base import BaseAPIView, BaseListAPIView
 
 
@@ -76,7 +85,6 @@ class PageListView(BaseListAPIView):
     permission_classes = [IsAllowedPublicLanguage]
     serializer_class = PageListSerializer
     pagination_class = LimitOffsetPagination
-    content_getter = "get_content_obj"
 
     def get_queryset(self):
         """Get queryset of pages for the given language."""
@@ -103,7 +111,6 @@ class PageListView(BaseListAPIView):
 class PageTreeListView(BaseAPIView):
     permission_classes = [IsAllowedPublicLanguage]
     serializer_class = PageMetaSerializer
-    content_getter = "get_content_obj"
 
     def get(self, request, language):
         """List of all pages on this site for a given language."""
@@ -135,7 +142,6 @@ class PageTreeListView(BaseAPIView):
 class PageDetailView(BaseAPIView):
     permission_classes = [IsAllowedPublicLanguage, CanViewPage]
     serializer_class = PageContentSerializer
-    content_getter = "get_content_obj"
 
     def get(self, request: Request, language: str, path: str = "") -> Response:
         """Retrieve a page instance. The page instance includes the placeholders and
@@ -241,19 +247,89 @@ class PluginDefinitionView(BaseAPIView):
         return Response(definitions)
 
 
-class PreviewPageView(PageDetailView):
-    content_getter = "get_admin_content"
-    serializer_class = PreviewPageContentSerializer
-    permission_classes = [IsAdminUser, CanViewPage]
+class MenuView(BaseAPIView):
+    permission_classes = [IsAllowedPublicLanguage]
+    serializer_class = NavigationNodeSerializer
+
+    tag = ShowMenu
+    return_key = "children"
+
+    def get(
+        self,
+        request: Request,
+        language: str,
+        path: str = "",  # for menu-root endpoint
+        **kwargs: dict[str, Any],
+    ) -> Response:
+        """Get the menu structure for a specific language and path."""
+        self.populate_defaults(kwargs)
+        menu = self.get_menu_structure(request, language, path, **kwargs)
+        serializer = self.serializer_class(
+            menu, many=True, context={"request": request}
+        )
+        return Response(serializer.data)
+
+    def populate_defaults(self, kwargs: dict[str, Any]) -> None:
+        """Set default values for menu view parameters."""
+        kwargs.setdefault("from_level", 0)
+        kwargs.setdefault("to_level", 100)
+        kwargs.setdefault("extra_inactive", 0)
+        kwargs.setdefault("extra_active", 1000)
+        kwargs.setdefault("root_id", None)
+        kwargs.setdefault("namespace", None)
+        kwargs.setdefault("next_page", None)
+
+    def get_menu_structure(
+        self,
+        request: Request,
+        language: str,
+        path: str,
+        **kwargs: dict[str, Any],
+    ) -> list[dict[str, Any]]:
+        """Get the menu structure for a specific language and path."""
+        # Implement the logic to retrieve the menu structure
+
+        # Create tag instance without calling __init__
+        tag_instance = self.tag.__new__(self.tag)
+
+        # Initialize minimal necessary attributes
+        tag_instance.kwargs = {}
+        tag_instance.blocks = {}
+
+        if path == "":
+            api_endpoint = reverse("page-root", kwargs={"language": language})
+        else:
+            api_endpoint = reverse(
+                "page-detail", kwargs={"language": language, "path": path}
+            )
+
+        request.api_endpoint = api_endpoint
+        request.LANGUAGE_CODE = language
+        request.current_page = get_object(self.site, path)
+        self.check_object_permissions(request, request.current_page)
+        context = {"request": request}
+
+        context = tag_instance.get_context(
+            context=context,
+            **kwargs,
+            template=None,
+        )
+        return context.get(self.return_key, [])
 
 
-class PreviewPageTreeListView(PageTreeListView):
-    content_getter = "get_admin_content"
-    serializer_class = PageMetaSerializer
-    permission_classes = [IsAdminUser, CanViewPage]
+class SubMenuView(MenuView):
+    tag = ShowSubMenu
+
+    def populate_defaults(self, kwargs: dict[str, Any]) -> None:
+        kwargs.setdefault("levels", 100)
+        kwargs.setdefault("root_level", None)
+        kwargs.setdefault("nephews", 100)
 
 
-class PreviewPageListView(PageListView):
-    content_getter = "get_admin_content"
-    serializer_class = PageMetaSerializer
-    permission_classes = [IsAdminUser, CanViewPage]
+class BreadcrumbView(MenuView):
+    tag = ShowBreadcrumb
+    return_key = "ancestors"
+
+    def populate_defaults(self, kwargs: dict[str, Any]) -> None:
+        kwargs.setdefault("start_level", 0)
+        kwargs.setdefault("only_visible", True)

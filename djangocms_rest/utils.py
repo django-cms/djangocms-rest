@@ -45,8 +45,12 @@ def get_absolute_frontend_url(request: Request, path: str) -> str:
     Returns:
         An absolute URL formatted as a string.
     """
+    if path is None:
+        return None
     protocol = getattr(request, "scheme", "http")
-    domain = getattr(request, "get_host", lambda: Site.objects.get_current().domain)()
+    domain = getattr(
+        request, "get_host", lambda: Site.objects.get_current(request).domain
+    )()
     if not path.startswith("/"):
         path = f"/{path}"
     return f"{protocol}://{domain}{path}"
