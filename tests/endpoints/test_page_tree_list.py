@@ -53,12 +53,12 @@ class PageTreeListAPITestCase(BaseCMSRestTestCase):
 
         # GET PREVIEW
         response = self.client.get(
-            reverse("preview-page-tree-list", kwargs={"language": "en"})
+            reverse("page-tree-list", kwargs={"language": "en"}) + "?preview"
         )
         self.assertEqual(response.status_code, 403)
 
         response = self.client.get(
-            reverse("preview-page-tree-list", kwargs={"language": "xx"})
+            reverse("page-tree-list", kwargs={"language": "xx"}) + "?preview"
         )
         self.assertEqual(response.status_code, 403)
 
@@ -66,7 +66,7 @@ class PageTreeListAPITestCase(BaseCMSRestTestCase):
     def test_get_protected(self):
         self.client.force_login(self.user)
         response = self.client.get(
-            reverse("preview-page-tree-list", kwargs={"language": "en"})
+            reverse("page-tree-list", kwargs={"language": "en"}) + "?preview"
         )
         self.assertEqual(response.status_code, 200)
 
