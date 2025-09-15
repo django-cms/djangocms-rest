@@ -194,8 +194,9 @@ class PlaceholderDetailView(BaseAPIView):
             raise NotFound()
 
         source_model = placeholder.content_type.model_class()
+        content_manager = "admin_manager" if self._preview_requested() else "content"
         source = (
-            getattr(source_model, self.content_getter, source_model.objects)
+            getattr(source_model, content_manager, source_model.objects)
             .filter(pk=placeholder.object_id)
             .first()
         )
