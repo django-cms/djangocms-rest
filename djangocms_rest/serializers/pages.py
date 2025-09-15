@@ -37,7 +37,9 @@ class BasePageSerializer(serializers.Serializer):
 class BasePageContentMixin:
     @property
     def is_preview(self):
-        return "preview" in self.request.GET
+        return "preview" in self.request.GET and self.request.GET.get(
+            "preview", ""
+        ).lower() not in ("0", "false")
 
     def get_base_representation(self, page_content: PageContent) -> dict:
         request = getattr(self, "request", None)

@@ -28,6 +28,14 @@ class PageRootAPITestCase(BaseCMSRestTestCase):
         page = response.json()
         self.assertFalse(response.json().get("is_preview"))
 
+        # GET with ?preview=false
+        response = self.client.get(
+            reverse("page-root", kwargs={"language": "en"}) + "?preview=false"
+        )
+        self.assertEqual(response.status_code, 200)
+        page = response.json()
+        self.assertFalse(response.json().get("is_preview"))
+
         # Data & Type Validation
         for field, expected_type in type_checks.items():
             self.assertIn(field, page, f"Field {field} is missing")

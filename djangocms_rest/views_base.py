@@ -21,9 +21,9 @@ class BaseAPIMixin:
         return site if site is not None else get_current_site(self.request)
 
     def _preview_requested(self):
-        return "preview" in self.request.GET and self.request.GET[
-            "preview"
-        ].lower() not in ("0", "false")
+        return "preview" in self.request.GET and self.request.GET.get(
+            "preview", ""
+        ).lower() not in ("0", "false")
 
     @property
     def content_getter(self):
