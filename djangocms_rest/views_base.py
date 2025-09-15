@@ -20,15 +20,20 @@ class BaseAPIMixin:
         site = getattr(self.request, "site", None)
         return site if site is not None else get_current_site(self.request)
 
+    def _preview_requested(self):
+        return "preview" in self.request.GET and self.request.GET[
+            "preview"
+        ].lower() not in ("0", "false")
+
     @property
     def content_getter(self):
-        if "preview" in self.request.GET:
+        if self._preview_requested():
             return "get_admin_content"
         return "get_content_obj"
 
     def get_permissions(self):
         permissions = super().get_permissions()
-        if "preview" in self.request.GET:
+        if self._preview_requested():
             # Require admin access for preview as first check
             permissions.insert(0, IsAdminUser())
         return permissions
@@ -46,4 +51,5 @@ class BaseListAPIView(BaseAPIMixin, ListAPIView):
     """
     This is a base class for all list API views. It supports default pagination and sets the allowed methods to GET and OPTIONS.
     """
+
     pass

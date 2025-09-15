@@ -13,7 +13,6 @@ from menus.templatetags.menu_tags import ShowBreadcrumb, ShowMenu, ShowSubMenu
 
 from rest_framework.exceptions import NotFound
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.permissions import IsAdminUser
 from rest_framework.request import Request
 from rest_framework.response import Response
 
@@ -165,7 +164,6 @@ class PageDetailView(BaseAPIView):
 class PlaceholderDetailView(BaseAPIView):
     permission_classes = [IsAllowedPublicLanguage]
     serializer_class = PlaceholderSerializer
-    content_manager = "objects"
 
     @extend_placeholder_schema
     def get(
@@ -197,7 +195,7 @@ class PlaceholderDetailView(BaseAPIView):
 
         source_model = placeholder.content_type.model_class()
         source = (
-            getattr(source_model, self.content_manager, source_model.objects)
+            getattr(source_model, self.content_getter, source_model.objects)
             .filter(pk=placeholder.object_id)
             .first()
         )
@@ -218,11 +216,6 @@ class PlaceholderDetailView(BaseAPIView):
             instance=placeholder, request=request, language=language, read_only=True
         )
         return Response(serializer.data)
-
-
-class PreviewPlaceholderDetailView(PlaceholderDetailView):
-    content_manager = "admin_manager"
-    permission_classes = [IsAdminUser]
 
 
 class PluginDefinitionView(BaseAPIView):

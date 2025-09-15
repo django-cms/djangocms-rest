@@ -6,7 +6,6 @@ from djangocms_rest.utils import get_absolute_frontend_url
 
 
 class NavigationNodeSerializer(serializers.Serializer):
-    id = serializers.IntegerField()
     namespace = serializers.CharField(allow_null=True)
     title = serializers.CharField()
     url = serializers.URLField(allow_null=True)
