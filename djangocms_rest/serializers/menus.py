@@ -30,10 +30,11 @@ class NavigationNodeSerializer(serializers.Serializer):
     def to_representation(self, obj: NavigationNode) -> dict:
         """Customize the base representation of the NavigationNode."""
         return {
-            "id": obj.id,
             "title": obj.title,
             "url": get_absolute_frontend_url(self.request, obj.url),
-            "api_endpoint": get_absolute_frontend_url(self.request, obj.api_endpoint),
+            "api_endpoint": get_absolute_frontend_url(
+                self.request, getattr(obj, "api_endpoint", None)
+            ),
             "visible": obj.visible,
             "selected": obj.selected
             or obj.attr.get("is_home", False)
