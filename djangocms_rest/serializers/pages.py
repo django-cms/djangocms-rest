@@ -25,9 +25,7 @@ class BasePageSerializer(serializers.Serializer):
     xframe_options = serializers.CharField(max_length=50, allow_blank=True)
     limit_visibility_in_menu = serializers.BooleanField(default=False, allow_null=True)
     language = serializers.CharField(max_length=10)
-    languages = serializers.ListSerializer(
-        child=serializers.CharField(), allow_empty=True, required=False
-    )
+    languages = serializers.ListSerializer(child=serializers.CharField(), allow_empty=True, required=False)
     is_preview = serializers.BooleanField(default=False)
     application_namespace = serializers.CharField(max_length=200, allow_null=True)
     creation_date = serializers.DateTimeField()
@@ -37,17 +35,13 @@ class BasePageSerializer(serializers.Serializer):
 class BasePageContentMixin:
     @property
     def is_preview(self):
-        return "preview" in self.request.GET and self.request.GET.get(
-            "preview", ""
-        ).lower() not in ("0", "false")
+        return "preview" in self.request.GET and self.request.GET.get("preview", "").lower() not in ("0", "false")
 
     def get_base_representation(self, page_content: PageContent) -> dict:
         request = getattr(self, "request", None)
         path = page_content.page.get_path(page_content.language)
         absolute_url = get_absolute_frontend_url(request, path)
-        api_endpoint = get_absolute_frontend_url(
-            request, page_content.page.get_api_endpoint(page_content.language)
-        )
+        api_endpoint = get_absolute_frontend_url(request, page_content.page.get_api_endpoint(page_content.language))
         redirect = str(page_content.redirect or "")
         xframe_options = str(page_content.xframe_options or "")
         application_namespace = str(page_content.page.application_namespace or "")
@@ -57,8 +51,8 @@ class BasePageContentMixin:
             "title": page_content.title,
             "page_title": page_content.page_title or page_content.title,
             "menu_title": page_content.menu_title or page_content.title,
-            "meta_description": page_content.meta_description,
-            "redirect": redirect,
+            "meta_description": page_content.meta_description or "",  # Model allows None, schema does not
+            "redirect": redirect or "",
             "in_navigation": page_content.in_navigation,
             "soft_root": page_content.soft_root,
             "template": page_content.template,
@@ -89,9 +83,7 @@ class PageTreeSerializer(serializers.ListSerializer):
         serialized_data = self.child.to_representation(item)
         serialized_data["children"] = []
         if item.page in self.tree:
-            serialized_data["children"] = [
-                self.tree_to_representation(child) for child in self.tree[item.page]
-            ]
+            serialized_data["children"] = [self.tree_to_representation(child) for child in self.tree[item.page]]
         return serialized_data
 
     def to_representation(self, data: dict) -> list[dict]:
@@ -100,9 +92,7 @@ class PageTreeSerializer(serializers.ListSerializer):
 
 
 class PageMetaSerializer(BasePageSerializer, BasePageContentMixin):
-    children = serializers.ListSerializer(
-        child=serializers.DictField(), required=False, default=[]
-    )
+    children = serializers.ListSerializer(child=serializers.DictField(), required=False, default=[])
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -123,9 +113,7 @@ class PageMetaSerializer(BasePageSerializer, BasePageContentMixin):
             try:
                 parent = instance.page.parent
             except AttributeError:
-                parent = (
-                    instance.page.parent_page
-                )  # TODO: Remove when django CMS 4.1 is no longer supported
+                parent = instance.page.parent_page  # TODO: Remove when django CMS 4.1 is no longer supported
             tree.setdefault(parent, []).append(instance)
 
         # Prepare the child serializer with the proper context.
@@ -144,14 +132,9 @@ class PageContentSerializer(BasePageSerializer, BasePageContentMixin):
         self.request = self.context.get("request")
 
     def to_representation(self, page_content: PageContent) -> dict:
-        declared_slots = [
-            placeholder.slot
-            for placeholder in page_content.page.get_declared_placeholders()
-        ]
+        declared_slots = [placeholder.slot for placeholder in page_content.page.get_declared_placeholders()]
         placeholders = [
-            placeholder
-            for placeholder in page_content.placeholders.all()
-            if placeholder.slot in declared_slots
+            placeholder for placeholder in page_content.placeholders.all() if placeholder.slot in declared_slots
         ]
 
         placeholders_data = [
