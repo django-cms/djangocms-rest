@@ -55,11 +55,12 @@ try:
                 location="query",
                 description="Set to true to preview unpublished content (admin access required)",
                 required=False,
-            )
+            ),
         ]
     )
 
-except ImportError: # pragma: no cover
+except ImportError:  # pragma: no cover
+
     class OpenApiTypes:
         BOOL = "boolean"
         INT = "integer"
@@ -76,6 +77,7 @@ except ImportError: # pragma: no cover
     def extend_schema(*_args, **_kwargs):  # pragma: no cover
         def _decorator(obj: T) -> T:
             return obj
+
         return _decorator
 
     def extend_placeholder_schema(func: Callable[P, T]) -> Callable[P, T]:
@@ -268,6 +270,24 @@ class PluginDefinitionView(BaseAPIView):
         return Response(definitions)
 
 
+try:
+    from drf_spectacular.utils import extend_schema, OpenApiResponse
+
+    def method_schema_decorator(method):
+        """
+        Decorator for adding OpenAPI schema to a method.
+        Needed to force the schema to use many=True for NavigationNodeSerializer.
+        """
+        return extend_schema(
+            responses=OpenApiResponse(response=NavigationNodeSerializer(many=True))
+        )(method)
+
+except ImportError:  # pragma: no cover
+
+    def method_schema_decorator(method):  # pragma: no cover
+        return method  # pragma: no cover
+
+
 class MenuView(BaseAPIView):
     permission_classes = [IsAllowedPublicLanguage]
     serializer_class = NavigationNodeSerializer
@@ -275,6 +295,7 @@ class MenuView(BaseAPIView):
     tag = ShowMenu
     return_key = "children"
 
+    @method_schema_decorator
     def get(
         self,
         request: Request,
