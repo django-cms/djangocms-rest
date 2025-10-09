@@ -9,6 +9,7 @@ class NavigationNodeSerializer(serializers.Serializer):
     namespace = serializers.CharField(allow_null=True)
     title = serializers.CharField()
     url = serializers.URLField(allow_null=True)
+    path = serializers.CharField(allow_null=True)
     api_endpoint = serializers.URLField(allow_null=True)
     visible = serializers.BooleanField()
     selected = serializers.BooleanField()
@@ -22,9 +23,7 @@ class NavigationNodeSerializer(serializers.Serializer):
 
     def get_children(self, obj: NavigationNode) -> list[dict]:
         # Assuming obj.children is a list of NavigationNode-like objects
-        serializer = NavigationNodeSerializer(
-            obj.children or [], many=True, context=self.context
-        )
+        serializer = NavigationNodeSerializer(obj.children or [], many=True, context=self.context)
         return serializer.data
 
     def to_representation(self, obj: NavigationNode) -> dict:
@@ -32,14 +31,11 @@ class NavigationNodeSerializer(serializers.Serializer):
         return {
             "namespace": getattr(obj, "namespace", None),
             "title": obj.title,
-            "url": get_absolute_frontend_url(self.request, obj.url),
-            "api_endpoint": get_absolute_frontend_url(
-                self.request, getattr(obj, "api_endpoint", None)
-            ),
+            "url": get_absolute_frontend_url(self.request, obj.url) or "",
+            "api_endpoint": get_absolute_frontend_url(self.request, getattr(obj, "api_endpoint", None)) or "",
+            "path": getattr(obj, "api_endpoint", ""),
             "visible": obj.visible,
-            "selected": obj.selected
-            or obj.attr.get("is_home", False)
-            and getattr(self.request, "is_home", False),
+            "selected": obj.selected or obj.attr.get("is_home", False) and getattr(self.request, "is_home", False),
             "attr": obj.attr,
             "level": obj.level,
             "children": self.get_children(obj),
