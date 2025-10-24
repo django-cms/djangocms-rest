@@ -14,7 +14,8 @@ jobs:
           dj42_cms50.txt,
           dj50_cms50.txt,
           dj51_cms50.txt,
-          dj52_cms50.txt
+          dj52_cms50.txt,
+          dj60_cms50.txt
         ]
         os: [
           ubuntu-latest,
