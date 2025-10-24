@@ -69,7 +69,8 @@ class BaseAPIMixin:
             "0",
             "false",
         )
-        self.request.toolbar.preview_mode_active = preview_mode
+        if hasattr(self.request, "toolbar"):
+            self.request.toolbar.preview_mode_active = preview_mode
         return preview_mode
 
     @property
