@@ -17,7 +17,7 @@ def serialize_fk(
     request: HttpRequest,
     related_model: type[CMSPlugin],
     pk: Any,
-    obj: Optional[Model] = None,
+    obj: Model | None = None,
 ) -> dict[str, Any]:
     """
     Serializes a foreign key reference to a related model as a URL or identifier.
@@ -157,7 +157,7 @@ class PluginDefinitionSerializer(serializers.Serializer):
     properties = serializers.DictField(help_text="Property definitions")
 
     @staticmethod
-    def get_field_format(field: Field) -> Optional[str]:
+    def get_field_format(field: Field) -> str | None:
         """
         Get the format for specific field types.
 

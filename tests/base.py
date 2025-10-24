@@ -16,7 +16,7 @@ class BaseCMSRestTestCase(RESTTestCase):
     @classmethod
     def _create_pages(
         cls,
-        page_list: Union[int, list[Union[int, tuple[int, int]]]],
+        page_list: int | list[int | tuple[int, int]],
         parent: Optional["Page"] = None,
         is_first: bool = True,
     ):

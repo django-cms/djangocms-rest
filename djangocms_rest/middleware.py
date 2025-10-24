@@ -1,4 +1,4 @@
-from typing import Callable
+from collections.abc import Callable
 
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.sites.models import Site

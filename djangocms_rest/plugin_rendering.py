@@ -1,5 +1,6 @@
 import json
-from typing import Any, Iterable, Optional, TypeVar
+from typing import Any, Optional, TypeVar
+from collections.abc import Iterable
 
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ValidationError
@@ -50,8 +51,8 @@ def get_auto_model_serializer(model_class: type[ModelType]) -> type:
 
 
 def serialize_cms_plugin(
-    instance: Optional[Any], context: dict[str, Any]
-) -> Optional[dict[str, Any]]:
+    instance: Any | None, context: dict[str, Any]
+) -> dict[str, Any] | None:
     if not instance or not hasattr(instance, "get_plugin_instance"):
         return None
     plugin_instance, plugin = instance.get_plugin_instance()

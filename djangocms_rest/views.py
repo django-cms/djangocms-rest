@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Any, Callable, ParamSpec, TypeVar
+from typing import Any, ParamSpec, TypeVar
+from collections.abc import Callable
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
 from django.utils.functional import lazy
