@@ -15,11 +15,20 @@ jobs:
           dj50_cms50.txt,
           dj51_cms50.txt,
           dj52_cms50.txt,
-          dj60_cms50.txt
         ]
         os: [
           ubuntu-latest,
         ]
+        include:
+          - python-version: "3.12"
+            requirements-file: dj60_cms50.txt
+            os: ubuntu-latest
+          - python-version: "3.13"
+            requirements-file: dj60_cms50.txt
+            os: ubuntu-latest
+          - python-version: "3.14"
+            requirements-file: dj60_cms50.txt
+            os: ubuntu-latest
     steps:
     - uses: actions/checkout@v5
     - name: Set up Python ${{ matrix.python-version }}
