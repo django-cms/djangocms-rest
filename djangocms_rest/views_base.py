@@ -68,15 +68,19 @@ class BaseAPIMixin:
         return site if site is not None else get_current_site(self.request)
 
     def _preview_requested(self):
-        preview_mode = "preview" in self.request.GET and self.request.GET.get("preview", "").lower() not in (
-            "0",
-            "false",
-        )
-        if preview_mode:
-            if not hasattr(self.request, "toolbar"):  # Create toolbar if not present to mark preview mode
-                self.request.toolbar = CMSToolbar(self.request)
-            self.request.toolbar.preview_mode_active = True
-        return preview_mode
+        if not hasattr(self.request, "_preview_mode"):
+            # Cache to not re-generate toolbar object for preview requests
+            self.request._preview_mode = "preview" in self.request.GET and self.request.GET.get(
+                "preview", ""
+            ).lower() not in (
+                "0",
+                "false",
+            )
+            if self.request._preview_mode:
+                if not hasattr(self.request, "toolbar"):  # Create toolbar if not present to mark preview mode
+                    self.request.toolbar = CMSToolbar(self.request)
+                self.request.toolbar.preview_mode_active = True
+        return self.request._preview_mode
 
     @property
     def content_getter(self):
