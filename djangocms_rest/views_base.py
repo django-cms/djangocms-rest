@@ -2,6 +2,9 @@ from typing import ParamSpec, TypeVar
 
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.functional import cached_property
+
+from cms.toolbar.toolbar import CMSToolbar
+
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAdminUser
 from rest_framework.views import APIView
@@ -69,8 +72,10 @@ class BaseAPIMixin:
             "0",
             "false",
         )
-        if hasattr(self.request, "toolbar"):
-            self.request.toolbar.preview_mode_active = preview_mode
+        if preview_mode:
+            if not hasattr(self.request, "toolbar"):  # Create toolbar if not present to mark preview mode
+                self.request.toolbar = CMSToolbar(self.request)
+            self.request.toolbar.preview_mode_active = True
         return preview_mode
 
     @property
