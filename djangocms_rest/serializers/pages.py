@@ -1,6 +1,7 @@
 from django.db import models
 
 from cms.models import PageContent
+from cms.utils.placeholder import get_declared_placeholders_for_obj
 
 from rest_framework import serializers
 
@@ -137,7 +138,7 @@ class PageContentSerializer(BasePageSerializer, BasePageContentMixin):
         self.request = self.context.get("request")
 
     def to_representation(self, page_content: PageContent) -> dict:
-        declared_slots = [placeholder.slot for placeholder in page_content.page.get_declared_placeholders()]
+        declared_slots = [placeholder.slot for placeholder in get_declared_placeholders_for_obj(page_content)]
         placeholders = [
             placeholder for placeholder in page_content.placeholders.all() if placeholder.slot in declared_slots
         ]
