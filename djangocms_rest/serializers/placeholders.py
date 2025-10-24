@@ -11,68 +11,54 @@ class PlaceholderSerializer(serializers.Serializer):
     slot = serializers.CharField()
     label = serializers.CharField()
     language = serializers.CharField()
-    content = serializers.ListSerializer(
-        child=serializers.JSONField(), allow_empty=True, required=False
-    )
+    content = serializers.ListSerializer(child=serializers.JSONField(), allow_empty=True, required=False)
+    details = serializers.URLField()
     html = serializers.CharField(default="", required=False)
 
     def __init__(self, *args, **kwargs):
-        request = kwargs.pop("request", None)
-        placeholder = kwargs.pop("instance", None)
-        language = kwargs.pop("language", None)
-        render_plugins = kwargs.pop("render_plugins", True)
+        self.request = kwargs.pop("request", None)
+        self.language = kwargs.pop("language", None)
+        self.render_plugins = kwargs.pop("render_plugins", True)
         super().__init__(*args, **kwargs)
-        if request is None:
-            request = self.context.get("request")
-
-        if placeholder and request and language:
-            if render_plugins:
-                from djangocms_rest.plugin_rendering import RESTRenderer
-
-                renderer = RESTRenderer(request)
-                placeholder.content = renderer.serialize_placeholder(
-                    placeholder,
-                    context=Context({"request": request}),
-                    language=language,
-                    use_cache=True,
-                )
-            if request.GET.get("html", False):
-                html = render_html(request, placeholder, language)
-                for key, value in html.items():
-                    if not hasattr(placeholder, key):
-                        setattr(placeholder, key, value)
-                        self.fields[key] = serializers.CharField()
-            placeholder.label = placeholder.get_label()
-            placeholder.language = language
-            self.instance = placeholder
-
-
-class PlaceholderRelationSerializer(serializers.Serializer):
-    content_type_id = serializers.IntegerField()
-    object_id = serializers.IntegerField()
-    slot = serializers.CharField()
-    details = serializers.URLField()
-
-    def __init__(self, *args, **kwargs):
-        language = kwargs.pop("language", None)
-        super().__init__(*args, **kwargs)
-        self.request = self.context.get("request")
-        self.language = language
+        if self.request is None:
+            self.request = self.context.get("request")
 
     def to_representation(self, instance):
-        instance["details"] = self.get_details(instance)
+        instance.label = instance.get_label()
+        instance.language = self.language
+        instance.details = self.get_details(instance)
+        if instance and self.request and self.language:
+            if self.render_plugins:
+                from djangocms_rest.plugin_rendering import RESTRenderer
+
+                renderer = RESTRenderer(self.request)
+                instance.content = renderer.serialize_placeholder(
+                    instance,
+                    context=Context({"request": self.request}),
+                    language=self.language,
+                    use_cache=True,
+                )
+            if self.request.GET.get("html", False):
+                html = render_html(self.request, instance, self.language)
+                for key, value in html.items():
+                    if not hasattr(instance, key):
+                        setattr(instance, key, value)
+
         return super().to_representation(instance)
 
     def get_details(self, instance):
-        return get_absolute_frontend_url(
+        url = get_absolute_frontend_url(
             self.request,
             reverse(
                 "placeholder-detail",
                 args=[
                     self.language,
-                    instance.get("content_type_id"),
-                    instance.get("object_id"),
-                    instance.get("slot"),
+                    instance.content_type_id,
+                    instance.object_id,
+                    instance.slot,
                 ],
             ),
         )
+        if self.request.GET:
+            url += f"?{self.request.GET.urlencode()}"
+        return url
