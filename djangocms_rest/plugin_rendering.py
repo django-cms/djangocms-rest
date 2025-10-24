@@ -1,5 +1,5 @@
 import json
-from typing import Any, Optional, TypeVar
+from typing import Any, TypeVar
 from collections.abc import Iterable
 
 from django.contrib.sites.shortcuts import get_current_site

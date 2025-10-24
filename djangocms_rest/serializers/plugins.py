@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any
 
 from django.apps import apps
 from django.db.models import Field, Model

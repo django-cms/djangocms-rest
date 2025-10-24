@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Optional
 
 from cms.api import create_page
 from cms.models import Page
