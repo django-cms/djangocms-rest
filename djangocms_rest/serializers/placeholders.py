@@ -11,9 +11,7 @@ class PlaceholderSerializer(serializers.Serializer):
     slot = serializers.CharField()
     label = serializers.CharField()
     language = serializers.CharField()
-    content = serializers.ListSerializer(
-        child=serializers.JSONField(), allow_empty=True, required=False
-    )
+    content = serializers.ListSerializer(child=serializers.JSONField(), allow_empty=True, required=False)
     html = serializers.CharField(default="", required=False)
 
     def __init__(self, *args, **kwargs):
@@ -64,7 +62,7 @@ class PlaceholderRelationSerializer(serializers.Serializer):
         return super().to_representation(instance)
 
     def get_details(self, instance):
-        return get_absolute_frontend_url(
+        api_endpoint = get_absolute_frontend_url(
             self.request,
             reverse(
                 "placeholder-detail",
@@ -76,3 +74,9 @@ class PlaceholderRelationSerializer(serializers.Serializer):
                 ],
             ),
         )
+        if self.request._preview_mode:
+            if "?" in api_endpoint:
+                api_endpoint += "&preview=1"
+            else:
+                api_endpoint += "?preview=1"
+        return api_endpoint

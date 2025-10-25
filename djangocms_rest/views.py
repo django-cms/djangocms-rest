@@ -178,7 +178,7 @@ class PageDetailView(BaseAPIView):
 
         try:
             page_content = getattr(page, self.content_getter)(language, fallback=True)
-            if page_content is None:
+            if not page_content:
                 raise PageContent.DoesNotExist()
             serializer = self.serializer_class(page_content, read_only=True, context={"request": request})
             return Response(serializer.data)

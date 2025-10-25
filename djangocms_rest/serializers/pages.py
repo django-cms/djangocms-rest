@@ -1,6 +1,7 @@
 from django.db import models
 
 from cms.models import PageContent
+from cms.utils.placeholder import get_declared_placeholders_for_obj
 
 from rest_framework import serializers
 
@@ -42,6 +43,11 @@ class BasePageContentMixin:
         path = page_content.page.get_path(page_content.language)
         absolute_url = get_absolute_frontend_url(request, path)
         api_endpoint = get_absolute_frontend_url(request, page_content.page.get_api_endpoint(page_content.language))
+        if self.is_preview:
+            if "?" in api_endpoint:
+                api_endpoint += "&preview=1"
+            else:
+                api_endpoint += "?preview=1"
         redirect = str(page_content.redirect or "")
         xframe_options = str(page_content.xframe_options or "")
         application_namespace = str(page_content.page.application_namespace or "")
@@ -132,7 +138,7 @@ class PageContentSerializer(BasePageSerializer, BasePageContentMixin):
         self.request = self.context.get("request")
 
     def to_representation(self, page_content: PageContent) -> dict:
-        declared_slots = [placeholder.slot for placeholder in page_content.page.get_declared_placeholders()]
+        declared_slots = [placeholder.slot for placeholder in get_declared_placeholders_for_obj(page_content)]
         placeholders = [
             placeholder for placeholder in page_content.placeholders.all() if placeholder.slot in declared_slots
         ]
