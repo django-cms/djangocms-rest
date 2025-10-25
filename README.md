@@ -411,4 +411,4 @@ like to change.
 
 ## License
 
-[BSD-3](https://github.com/fsbraun/djangocms-rest/blob/main/LICENSE)
+[BSD-3](https://github.com/django-cms/djangocms-rest/blob/main/LICENSE)
