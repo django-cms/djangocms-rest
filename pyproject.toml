@@ -37,7 +37,6 @@ classifiers = [
     "Framework :: Django CMS :: 4.0",
     "Framework :: Django CMS :: 4.1",
     "Framework :: Django CMS :: 5.0",
-    "Framework :: Django CMS :: 6.0",
     "Intended Audience :: Developers",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
