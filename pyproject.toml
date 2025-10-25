@@ -14,12 +14,13 @@ maintainers = [
 ]
 license = "BSD-3-Clause"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
     "django-cms>=5.0.0a1",
     "djangorestframework",
     "djangocms-link>=5.0.0",
     "djangocms-text>=0.8.0",
+    "djangocms-versioning>=2.1.0,<2.4.0",
     "pytest-cov>=6.0.0",
     "pytest-django>=4.10.0",
 ]
@@ -31,6 +32,7 @@ classifiers = [
     "Framework :: Django :: 5.0",
     "Framework :: Django :: 5.1",
     "Framework :: Django :: 5.2",
+    "Framework :: Django :: 6.0",
     "Framework :: Django CMS",
     "Framework :: Django CMS :: 4.0",
     "Framework :: Django CMS :: 4.1",
@@ -42,6 +44,8 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Internet :: WWW/HTTP",
     "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
     "Topic :: Software Development",
