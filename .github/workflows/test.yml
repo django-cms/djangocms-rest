@@ -15,18 +15,28 @@ jobs:
           dj50_cms50.txt,
           dj51_cms50.txt,
           dj52_cms50.txt,
+          dj60_cms50.txt,
         ]
         os: [
           ubuntu-latest,
         ]
-        include:
-          - python-version: "3.12"
-            requirements-file: dj60_cms50.txt
-            os: ubuntu-latest
-          - python-version: "3.13"
-            requirements-file: dj60_cms50.txt
+        exclude:
+          - python-version: "3.14"
+            requirements-file: dj42_cms41.txt
             os: ubuntu-latest
           - python-version: "3.14"
+            requirements-file: dj42_cms50.txt
+            os: ubuntu-latest
+          - python-version: "3.14"
+            requirements-file: dj51_cms50.txt
+            os: ubuntu-latest
+          - python-version: "3.14"
+            requirements-file: dj50_cms50.txt
+            os: ubuntu-latest
+          - python-version: "3.10"
+            requirements-file: dj60_cms50.txt
+            os: ubuntu-latest
+          - python-version: "3.11"
             requirements-file: dj60_cms50.txt
             os: ubuntu-latest
     steps:
