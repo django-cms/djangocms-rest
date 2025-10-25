@@ -136,6 +136,19 @@ class PageListView(BaseListAPIView):
             raise NotFound()
 
 
+class PageSearchView(PageListView):
+    def get(self, request, language: str | None = None) -> Response:
+        self.search_term = request.GET.get("q", "")
+        self.language = language
+        return super().get(request)
+
+    def get_queryset(self):
+        if not self.search_term:
+            return PageContent.objects.none()
+        qs = Page.objects.search(self.search_term, language=self.language, current_site_only=False).on_site(self.site)
+        return PageContent.objects.filter(page__in=qs).distinct()
+
+
 class PageTreeListView(BaseAPIView):
     permission_classes = [IsAllowedPublicLanguage]
     serializer_class = PageMetaSerializer
