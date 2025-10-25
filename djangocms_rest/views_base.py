@@ -2,6 +2,9 @@ from typing import ParamSpec, TypeVar
 
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.functional import cached_property
+
+from cms.toolbar.toolbar import CMSToolbar
+
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAdminUser
 from rest_framework.views import APIView
@@ -65,12 +68,19 @@ class BaseAPIMixin:
         return site if site is not None else get_current_site(self.request)
 
     def _preview_requested(self):
-        preview_mode = "preview" in self.request.GET and self.request.GET.get("preview", "").lower() not in (
-            "0",
-            "false",
-        )
-        self.request.toolbar.preview_mode_active = preview_mode
-        return preview_mode
+        if not hasattr(self.request, "_preview_mode"):
+            # Cache to not re-generate toolbar object for preview requests
+            self.request._preview_mode = "preview" in self.request.GET and self.request.GET.get(
+                "preview", ""
+            ).lower() not in (
+                "0",
+                "false",
+            )
+            if self.request._preview_mode:
+                if not hasattr(self.request, "toolbar"):  # Create toolbar if not present to mark preview mode
+                    self.request.toolbar = CMSToolbar(self.request)
+                self.request.toolbar.preview_mode_active = True
+        return self.request._preview_mode
 
     @property
     def content_getter(self):
