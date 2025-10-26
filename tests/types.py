@@ -29,15 +29,18 @@ PAGE_META_FIELD_TYPES = {
 
 PAGE_TREE_META_FIELD_TYPES = {**PAGE_META_FIELD_TYPES, "children": list}
 
-PLACEHOLDER_RELATION_FIELD_TYPES = {
-    "content_type_id": int,
-    "object_id": int,
+
+PLACEHOLDER_FIELD_TYPES = {
     "slot": str,
+    "label": str,
+    "language": str,
+    "content": list,
+    "html": str,
 }
 
 PAGE_CONTENT_FIELD_TYPES = {
     **PAGE_META_FIELD_TYPES,
-    "placeholders": [PLACEHOLDER_RELATION_FIELD_TYPES],
+    "placeholders": [PLACEHOLDER_FIELD_TYPES],
 }
 
 LANGUAGE_FIELD_TYPES = {
@@ -47,14 +50,6 @@ LANGUAGE_FIELD_TYPES = {
     "redirect_on_fallback": bool,
     "fallbacks": list,
     "hide_untranslated": bool,
-}
-
-PLACEHOLDER_FIELD_TYPES = {
-    "slot": str,
-    "label": str,
-    "language": str,
-    "content": list,
-    "html": str,
 }
 
 PLUGIN_FIELD_TYPES = {
