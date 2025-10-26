@@ -1,3 +1,5 @@
+from urllib.parse import urlencode
+
 from django.template import Context
 from django.urls import reverse
 
@@ -59,6 +61,7 @@ class PlaceholderSerializer(serializers.Serializer):
                 ],
             ),
         )
-        if self.request.GET:
-            url += f"?{self.request.GET.urlencode()}"
+        get_params = {key: self.request.GET[key] for key in ("html", "preview") if key in self.request.GET}
+        if get_params:
+            url += "?" + urlencode(get_params)
         return url
