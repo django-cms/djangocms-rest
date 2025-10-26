@@ -1,4 +1,4 @@
-from typing import Any, Union
+from typing import Any
 from unittest import TestCase
 
 
@@ -6,7 +6,7 @@ def assert_field_types(
     test_case: TestCase,
     obj: dict[str, Any],
     field: str,
-    expected_type: Union[type, tuple[type, ...], list, dict],
+    expected_type: type | tuple[type, ...] | list | dict,
     obj_type: str = "object",
 ):
     """
