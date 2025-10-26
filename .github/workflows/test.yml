@@ -63,8 +63,11 @@ jobs:
       run: |
         source .venv/bin/activate
         coverage run -m pytest
+        coverage xml
 
     - name: Upload Coverage to Codecov
       uses: codecov/codecov-action@v5.5.1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
+        files: ./coverage.xml
+        fail_ci_if_error: false
