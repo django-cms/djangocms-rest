@@ -13,9 +13,9 @@
 import os
 import sys
 
-from djangocms_rest import __version__
+sys.path.insert(0, os.path.abspath("../.."))
 
-sys.path.insert(0, os.path.abspath(".."))
+from djangocms_rest import __version__  # noqa: E402
 
 # -- Project information -----------------------------------------------------
 
