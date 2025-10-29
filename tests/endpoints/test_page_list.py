@@ -60,20 +60,54 @@ class PageListAPITestCase(BaseCMSRestTestCase):
         self.assertEqual(response.status_code, 404)
 
         # GET PREVIEW
-        response = self.client.get(
-            reverse("page-list", kwargs={"language": "en"}) + "?preview"
-        )
+        response = self.client.get(reverse("page-list", kwargs={"language": "en"}) + "?preview")
         self.assertEqual(response.status_code, 403)
 
-        response = self.client.get(
-            reverse("page-list", kwargs={"language": "xx"}) + "?preview"
-        )
+        response = self.client.get(reverse("page-list", kwargs={"language": "xx"}) + "?preview")
         self.assertEqual(response.status_code, 403)
 
     # GET PREVIEW - Protected
     def test_get_protected(self):
         self.client.force_login(self.user)
-        response = self.client.get(
-            reverse("page-list", kwargs={"language": "en"}) + "?preview"
-        )
+        response = self.client.get(reverse("page-list", kwargs={"language": "en"}) + "?preview")
         self.assertEqual(response.status_code, 200)
+
+    def test_page_search(self):
+        for page in self.pages:
+            page_content = page.get_admin_content("en")
+            if hasattr(page_content, "versions"):
+                page_content.versions.first().publish(self.get_superuser())
+
+        # GET
+        response = self.client.get(reverse("page-search", kwargs={"language": "en"}) + "?q=1")
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        results = data["results"]
+
+        # Validate REST Pagination Attributes
+        self.assertIn("count", data)
+        self.assertIn("next", data)
+        self.assertIn("previous", data)
+        self.assertIn("results", data)
+        self.assertIsInstance(results, list)
+        self.assertEqual(data["count"], 4)
+
+    def test_empty_page_search(self):
+        for page in self.pages:
+            page_content = page.get_admin_content("en")
+            if hasattr(page_content, "versions"):
+                page_content.versions.first().publish(self.get_superuser())
+
+        # GET
+        response = self.client.get(reverse("page-search", kwargs={"language": "en"}))
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        results = data["results"]
+
+        # Validate REST Pagination Attributes
+        self.assertIn("count", data)
+        self.assertIn("next", data)
+        self.assertIn("previous", data)
+        self.assertIn("results", data)
+        self.assertIsInstance(results, list)
+        self.assertEqual(data["count"], 0)
