@@ -1,0 +1,9 @@
+# Generated from docs/pyproject.toml [tool.poetry.dependencies]
+# Note: Poetry caret constraints (^) converted to pip-compatible specifiers
+sphinx>=7.2.6,<8.0.0
+sphinx-rtd-theme>=2.0.0,<3.0.0
+sphinx-autodoc-typehints>=2.0.0,<3.0.0
+sphinx-copybutton>=0.5.2,<0.6.0
+sphinx-tabs>=3.4.4,<4.0.0
+furo>=2025.7.19,<2026.0.0
+-e ..

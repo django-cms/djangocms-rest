@@ -13,6 +13,8 @@
 import os
 import sys
 
+from djangocms_rest import __version__
+
 sys.path.insert(0, os.path.abspath(".."))
 
 # -- Project information -----------------------------------------------------
@@ -22,7 +24,8 @@ copyright = "2024, Django CMS Association and contributors"
 author = "Django CMS Association and contributors"
 
 # The full version, including alpha/beta/rc tags
-release = "0.1.0"
+
+release = __version__
 
 # -- General configuration ---------------------------------------------------
 
@@ -121,10 +124,10 @@ html_css_files = [
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-html_title = "djangocms-rest"
+html_title = None
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
-html_short_title = "djangocms-rest"
+# html_short_title = "djangocms-rest"
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
