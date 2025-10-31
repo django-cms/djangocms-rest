@@ -28,11 +28,7 @@ def get_page_api_endpoint(page, language=None, fallback=True):
             if page.is_home:
                 return reverse("page-root", kwargs={"language": language})
             path = page.get_path(language, fallback)
-            return (
-                reverse("page-detail", kwargs={"language": language, "path": path})
-                if path
-                else None
-            )
+            return reverse("page-detail", kwargs={"language": language, "path": path}) if path else None
         except NoReverseMatch:
             return None
 
@@ -51,6 +47,10 @@ def patch_get_menu_node_for_page_content(method: callable) -> callable:
             page_content.page,
             page_content.language,
         )
+        # To save API calls, we add the page's path to the node attributes
+        node.attr["path"] = page_content.page.get_path(
+            page_content.language,
+        )
         return node
 
     return inner
@@ -59,9 +59,7 @@ def patch_get_menu_node_for_page_content(method: callable) -> callable:
 def patch_page_menu(menu: type[CMSMenu]):
     """Patch the CMSMenu to use the REST API endpoint for pages."""
     if hasattr(menu, "get_menu_node_for_page_content"):
-        menu.get_menu_node_for_page_content = patch_get_menu_node_for_page_content(
-            menu.get_menu_node_for_page_content
-        )
+        menu.get_menu_node_for_page_content = patch_get_menu_node_for_page_content(menu.get_menu_node_for_page_content)
 
 
 class NavigationNodeMixin:
@@ -101,9 +99,7 @@ class RESTToolbarMixin:
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    if getattr(
-        settings, "REST_JSON_RENDERING", not getattr(settings, "CMS_TEMPLATES", False)
-    ):
+    if getattr(settings, "REST_JSON_RENDERING", not getattr(settings, "CMS_TEMPLATES", False)):
         try:
             from djangocms_text import settings
 
