@@ -9,7 +9,6 @@ class NavigationNodeSerializer(serializers.Serializer):
     namespace = serializers.CharField(allow_null=True)
     title = serializers.CharField()
     url = serializers.URLField(allow_null=True)
-    path = serializers.CharField(allow_null=True)
     api_endpoint = serializers.URLField(allow_null=True)
     visible = serializers.BooleanField()
     selected = serializers.BooleanField()
@@ -40,7 +39,6 @@ class NavigationNodeSerializer(serializers.Serializer):
             "title": obj.title,
             "url": get_absolute_frontend_url(self.request, obj.url) or "",
             "api_endpoint": api_endpoint,
-            "path": path,
             "visible": obj.visible,
             "selected": obj.selected or obj.attr.get("is_home", False) and getattr(self.request, "is_home", False),
             "attr": obj.attr,
