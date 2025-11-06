@@ -8,12 +8,37 @@ from rest_framework import serializers
 from djangocms_rest.serializers.utils.render import render_html
 from djangocms_rest.utils import get_absolute_frontend_url
 
+try:
+    from drf_spectacular.utils import extend_schema_field
+
+    HAS_SPECTACULAR = True
+except ImportError:
+    HAS_SPECTACULAR = False
+
+    def extend_schema_field(field_schema):
+        def decorator(field):
+            return field
+
+        return decorator
+
 
 class PlaceholderSerializer(serializers.Serializer):
     slot = serializers.CharField()
     label = serializers.CharField()
     language = serializers.CharField()
-    content = serializers.ListSerializer(child=serializers.JSONField(), allow_empty=True, required=False)
+
+    # Annotate the content field for OpenAPI schema generation
+    @extend_schema_field(
+        {
+            "type": "array",
+            "items": {"type": "object"},
+            "description": "List of serialized plugin data for this placeholder",
+        }
+    )
+    class ContentField(serializers.ListSerializer):
+        child = serializers.JSONField()
+
+    content = ContentField(allow_empty=True, required=False)
     details = serializers.URLField()
     html = serializers.CharField(default="", required=False)
 
