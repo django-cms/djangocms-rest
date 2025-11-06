@@ -12,7 +12,7 @@ try:
     from drf_spectacular.utils import extend_schema_field
 
     HAS_SPECTACULAR = True
-except ImportError:
+except ImportError:  # pragma: no cover
     HAS_SPECTACULAR = False
 
     def extend_schema_field(field_schema):

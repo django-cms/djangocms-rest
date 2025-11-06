@@ -6,7 +6,7 @@ try:
     from drf_spectacular.views import SpectacularAPIView
 
     HAS_SPECTACULAR = True
-except ImportError:
+except ImportError:  # pragma: no cover
     HAS_SPECTACULAR = False
 
 admin.autodiscover()
