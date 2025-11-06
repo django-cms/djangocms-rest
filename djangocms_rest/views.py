@@ -61,6 +61,18 @@ try:
         ]
     )
 
+    extend_page_search_schema = extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="q",
+                type=OpenApiTypes.STR,
+                location=OpenApiParameter.QUERY,
+                description="Search for an exact match of the search term to find pages by title, page_title, menu_title, or meta_description",
+                required=False,
+            ),
+        ]
+    )
+
 except ImportError:  # pragma: no cover
 
     class OpenApiTypes:
@@ -83,6 +95,9 @@ except ImportError:  # pragma: no cover
         return _decorator
 
     def extend_placeholder_schema(func: Callable[P, T]) -> Callable[P, T]:
+        return func
+
+    def extend_page_search_schema(func: Callable[P, T]) -> Callable[P, T]:
         return func
 
 
@@ -137,6 +152,7 @@ class PageListView(BaseListAPIView):
 
 
 class PageSearchView(PageListView):
+    @extend_page_search_schema
     def get(self, request, language: str | None = None) -> Response:
         self.search_term = request.GET.get("q", "")
         self.language = language
