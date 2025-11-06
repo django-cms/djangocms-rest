@@ -5,7 +5,7 @@ from cms.utils.placeholder import get_declared_placeholders_for_obj
 
 from rest_framework import serializers
 
-from djangocms_rest.serializers.placeholders import PlaceholderRelationSerializer
+from djangocms_rest.serializers.placeholders import PlaceholderSerializer
 from djangocms_rest.utils import get_absolute_frontend_url
 
 
@@ -131,7 +131,7 @@ class PageMetaSerializer(BasePageSerializer, BasePageContentMixin):
 
 
 class PageContentSerializer(BasePageSerializer, BasePageContentMixin):
-    placeholders = PlaceholderRelationSerializer(many=True, required=False)
+    placeholders = PlaceholderSerializer(many=True, required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -142,19 +142,9 @@ class PageContentSerializer(BasePageSerializer, BasePageContentMixin):
         placeholders = [
             placeholder for placeholder in page_content.placeholders.all() if placeholder.slot in declared_slots
         ]
-
-        placeholders_data = [
-            {
-                "content_type_id": placeholder.content_type_id,
-                "object_id": placeholder.object_id,
-                "slot": placeholder.slot,
-            }
-            for placeholder in placeholders
-        ]
-
         data = self.get_base_representation(page_content)
-        data["placeholders"] = PlaceholderRelationSerializer(
-            placeholders_data,
+        data["placeholders"] = PlaceholderSerializer(
+            placeholders,
             language=page_content.language,
             many=True,
             context={"request": self.request},
