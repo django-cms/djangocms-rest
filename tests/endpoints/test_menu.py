@@ -26,7 +26,7 @@ class PageListAPITestCase(BaseCMSRestTestCase):
 
         # GET
         url = reverse(
-            "menu",
+            "menu-levels",
             kwargs={
                 "language": "en",
                 "from_level": 0,
@@ -68,7 +68,7 @@ class PageListAPITestCase(BaseCMSRestTestCase):
 
         # GET
         url = reverse(
-            "menu",
+            "menu-levels-path",
             kwargs={
                 "language": "en",
                 "path": "page-2",
@@ -94,7 +94,7 @@ class PageListAPITestCase(BaseCMSRestTestCase):
             kwargs={"language": "en"},
         )
         url2 = reverse(
-            "menu",
+            "menu-levels",
             kwargs={
                 "language": "en",
                 "from_level": 0,
@@ -111,14 +111,14 @@ class PageListAPITestCase(BaseCMSRestTestCase):
 
     def test_non_existing_root_id(self):
         url = reverse(
-            "menu",
+            "menu-root-levels",
             kwargs={
                 "language": "en",
+                "root_id": "I_DO_NOT_EXIST",
                 "from_level": 0,
                 "to_level": 100,
                 "extra_inactive": 0,
                 "extra_active": 100,
-                "root_id": "I_DO_NOT_EXIST",
             },
         )
         response = self.client.get(url)
@@ -127,7 +127,7 @@ class PageListAPITestCase(BaseCMSRestTestCase):
     def test_submenu(self):
         # GET
         url = reverse(
-            "submenu",
+            "submenu-path",
             kwargs={
                 "language": "en",
                 "path": "page-2",
@@ -145,7 +145,7 @@ class PageListAPITestCase(BaseCMSRestTestCase):
     def test_breadcrumbs(self):
         # GET
         url = reverse(
-            "breadcrumbs",
+            "breadcrumbs-path",
             kwargs={
                 "language": "en",
                 "path": "page-2/page-0",

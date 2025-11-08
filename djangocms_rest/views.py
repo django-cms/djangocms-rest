@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, ParamSpec, TypeVar
-from collections.abc import Callable
+from typing import Any
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
 from django.utils.functional import lazy
@@ -33,73 +32,7 @@ from djangocms_rest.utils import (
     get_site_filtered_queryset,
 )
 from djangocms_rest.views_base import BaseAPIView, BaseListAPIView
-
-P = ParamSpec("P")
-T = TypeVar("T")
-
-try:
-    from drf_spectacular.types import OpenApiTypes
-    from drf_spectacular.utils import OpenApiParameter, extend_schema
-
-    extend_placeholder_schema = extend_schema(
-        parameters=[
-            OpenApiParameter(
-                name="html",
-                type=OpenApiTypes.INT,
-                location="query",
-                description="Set to 1 to include HTML rendering in response",
-                required=False,
-                enum=[1],
-            ),
-            OpenApiParameter(
-                name="preview",
-                type=OpenApiTypes.BOOL,
-                location="query",
-                description="Set to true to preview unpublished content (admin access required)",
-                required=False,
-            ),
-        ]
-    )
-
-    extend_page_search_schema = extend_schema(
-        parameters=[
-            OpenApiParameter(
-                name="q",
-                type=OpenApiTypes.STR,
-                location=OpenApiParameter.QUERY,
-                description="Search for an exact match of the search term to find pages by title, page_title, menu_title, or meta_description",
-                required=False,
-            ),
-        ]
-    )
-
-except ImportError:  # pragma: no cover
-
-    class OpenApiTypes:
-        BOOL = "boolean"
-        INT = "integer"
-
-    class OpenApiParameter:  # pragma: no cover
-        QUERY = "query"
-        PATH = "path"
-        HEADER = "header"
-        COOKIE = "cookie"
-
-        def __init__(self, *args, **kwargs):
-            pass
-
-    def extend_schema(*_args, **_kwargs):  # pragma: no cover
-        def _decorator(obj: T) -> T:
-            return obj
-
-        return _decorator
-
-    def extend_placeholder_schema(func: Callable[P, T]) -> Callable[P, T]:
-        return func
-
-    def extend_page_search_schema(func: Callable[P, T]) -> Callable[P, T]:
-        return func
-
+from djangocms_rest.schemas import extend_placeholder_schema, menu_schema_class
 
 # Generate the plugin definitions once at module load time
 # This avoids the need to import the plugin definitions in every view
@@ -287,22 +220,7 @@ class PluginDefinitionView(BaseAPIView):
         return Response(definitions)
 
 
-try:
-    from drf_spectacular.utils import extend_schema, OpenApiResponse
-
-    def method_schema_decorator(method):
-        """
-        Decorator for adding OpenAPI schema to a method.
-        Needed to force the schema to use many=True for NavigationNodeSerializer.
-        """
-        return extend_schema(responses=OpenApiResponse(response=NavigationNodeSerializer(many=True)))(method)
-
-except ImportError:  # pragma: no cover
-
-    def method_schema_decorator(method):  # pragma: no cover
-        return method  # pragma: no cover
-
-
+@menu_schema_class
 class MenuView(BaseAPIView):
     permission_classes = [IsAllowedPublicLanguage]
     serializer_class = NavigationNodeSerializer
@@ -310,7 +228,6 @@ class MenuView(BaseAPIView):
     tag = ShowMenu
     return_key = "children"
 
-    @method_schema_decorator
     def get(
         self,
         request: Request,
@@ -381,6 +298,7 @@ class MenuView(BaseAPIView):
         return result
 
 
+@menu_schema_class
 class SubMenuView(MenuView):
     tag = ShowSubMenu
 
@@ -390,6 +308,7 @@ class SubMenuView(MenuView):
         kwargs.setdefault("nephews", 100)
 
 
+@menu_schema_class
 class BreadcrumbView(MenuView):
     tag = ShowBreadcrumb
     return_key = "ancestors"

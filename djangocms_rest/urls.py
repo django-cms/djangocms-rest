@@ -1,6 +1,7 @@
 from django.urls import path
 
 from . import views
+from .schemas import create_view_with_url_name
 
 
 urlpatterns = [
@@ -42,85 +43,85 @@ urlpatterns = [
     ),
     path("plugins/", views.PluginDefinitionView.as_view(), name="plugin-list"),
     # Menu endpoints
-    path("<slug:language>/menu/", views.MenuView.as_view(), name="menu"),
+    path("<slug:language>/menu/", create_view_with_url_name(views.MenuView, "menu"), name="menu"),
     path(
         "<slug:language>/menu/<int:from_level>/<int:to_level>/<int:extra_inactive>/<int:extra_active>/",
-        views.MenuView.as_view(),
-        name="menu",
+        create_view_with_url_name(views.MenuView, "menu-levels"),
+        name="menu-levels",
     ),
     path(
         "<slug:language>/menu/<int:from_level>/<int:to_level>/<int:extra_inactive>/<int:extra_active>/<path:path>/",
-        views.MenuView.as_view(),
-        name="menu",
+        create_view_with_url_name(views.MenuView, "menu-levels-path"),
+        name="menu-levels-path",
     ),
     path(
         "<slug:language>/menu/<slug:root_id>/<int:from_level>/<int:to_level>/<int:extra_inactive>/<int:extra_active>/",
-        views.MenuView.as_view(),
-        name="menu",
+        create_view_with_url_name(views.MenuView, "menu-root-levels"),
+        name="menu-root-levels",
     ),
     path(
         "<slug:language>/menu/<slug:root_id>/<int:from_level>/<int:to_level>/<int:extra_inactive>/<int:extra_active>/<path:path>/",
-        views.MenuView.as_view(),
-        name="menu",
+        create_view_with_url_name(views.MenuView, "menu-root-levels-path"),
+        name="menu-root-levels-path",
     ),
     path(
         "<slug:language>/submenu/<int:levels>/<int:root_level>/<int:nephews>/<path:path>/",
-        views.SubMenuView.as_view(),
-        name="submenu",
+        create_view_with_url_name(views.SubMenuView, "submenu-levels-root-nephews-path"),
+        name="submenu-levels-root-nephews-path",
     ),
     path(
         "<slug:language>/submenu/<int:levels>/<int:root_level>/<int:nephews>/",
-        views.SubMenuView.as_view(),
-        name="submenu",
+        create_view_with_url_name(views.SubMenuView, "submenu-levels-root-nephews"),
+        name="submenu-levels-root-nephews",
     ),
     path(
         "<slug:language>/submenu/<int:levels>/<int:root_level>/<path:path>/",
-        views.SubMenuView.as_view(),
-        name="submenu",
+        create_view_with_url_name(views.SubMenuView, "submenu-levels-root-path"),
+        name="submenu-levels-root-path",
     ),
     path(
         "<slug:language>/submenu/<int:levels>/<int:root_level>/",
-        views.SubMenuView.as_view(),
-        name="submenu",
+        create_view_with_url_name(views.SubMenuView, "submenu-levels-root"),
+        name="submenu-levels-root",
     ),
     path(
         "<slug:language>/submenu/<int:levels>/<path:path>/",
-        views.SubMenuView.as_view(),
-        name="submenu",
+        create_view_with_url_name(views.SubMenuView, "submenu-levels-path"),
+        name="submenu-levels-path",
     ),
     path(
         "<slug:language>/submenu/<int:levels>/",
-        views.SubMenuView.as_view(),
-        name="submenu",
+        create_view_with_url_name(views.SubMenuView, "submenu-levels"),
+        name="submenu-levels",
     ),
     path(
         "<slug:language>/submenu/<path:path>/",
-        views.SubMenuView.as_view(),
-        name="submenu",
+        create_view_with_url_name(views.SubMenuView, "submenu-path"),
+        name="submenu-path",
     ),
     path(
         "<slug:language>/submenu/",
-        views.SubMenuView.as_view(),
+        create_view_with_url_name(views.SubMenuView, "submenu"),
         name="submenu",
     ),
     path(
         "<slug:language>/breadcrumbs/<int:start_level>/<path:path>/",
-        views.BreadcrumbView.as_view(),
-        name="breadcrumbs",
+        create_view_with_url_name(views.BreadcrumbView, "breadcrumbs-level-path"),
+        name="breadcrumbs-level-path",
     ),
     path(
         "<slug:language>/breadcrumbs/<int:start_level>/",
-        views.BreadcrumbView.as_view(),
-        name="breadcrumbs",
+        create_view_with_url_name(views.BreadcrumbView, "breadcrumbs-level"),
+        name="breadcrumbs-level",
     ),
     path(
         "<slug:language>/breadcrumbs/<path:path>/",
-        views.BreadcrumbView.as_view(),
-        name="breadcrumbs",
+        create_view_with_url_name(views.BreadcrumbView, "breadcrumbs-path"),
+        name="breadcrumbs-path",
     ),
     path(
         "<slug:language>/breadcrumbs/",
-        views.BreadcrumbView.as_view(),
+        create_view_with_url_name(views.BreadcrumbView, "breadcrumbs"),
         name="breadcrumbs",
     ),
 ]
