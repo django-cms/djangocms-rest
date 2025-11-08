@@ -32,7 +32,7 @@ from djangocms_rest.utils import (
     get_site_filtered_queryset,
 )
 from djangocms_rest.views_base import BaseAPIView, BaseListAPIView
-from djangocms_rest.schemas import extend_placeholder_schema, menu_schema_class
+from djangocms_rest.schemas import extend_placeholder_schema, extend_page_search_schema, menu_schema_class
 
 # Generate the plugin definitions once at module load time
 # This avoids the need to import the plugin definitions in every view

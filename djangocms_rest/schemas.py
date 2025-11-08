@@ -69,6 +69,18 @@ try:
         ]
     )
 
+    extend_page_search_schema = extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="q",
+                type=OpenApiTypes.STR,
+                location=OpenApiParameter.QUERY,
+                description="Search for an exact match of the search term to find pages by title, page_title, menu_title, or meta_description",
+                required=False,
+            ),
+        ]
+    )
+
 except ImportError:
 
     def method_schema_decorator(method):
