@@ -75,7 +75,7 @@ try:
                 name="q",
                 type=OpenApiTypes.STR,
                 location=OpenApiParameter.QUERY,
-                description="Search for an exact match of the search term to find pages by title, page_title, menu_title, or meta_description",
+                description="Search for an exact match of the search term to find pages",
                 required=False,
             ),
         ]
@@ -94,5 +94,9 @@ except ImportError:
         return view_class.as_view()
 
     def extend_placeholder_schema(func):
+        """No-op when drf-spectacular is not available."""
+        return func
+
+    def extend_page_search_schema(func):
         """No-op when drf-spectacular is not available."""
         return func
