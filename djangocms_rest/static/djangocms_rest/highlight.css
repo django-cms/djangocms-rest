@@ -18,6 +18,12 @@
     }
 }
 
+section {
+    margin: 10px;
+    h1 {
+        font-family: Helvetica,Arial,sans-serif;
+    }
+}
 
 .rest-placeholder {
     display: block;
