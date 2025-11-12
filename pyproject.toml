@@ -72,6 +72,12 @@ include-package-data = true
 [tool.setuptools.dynamic]
 version = {attr = "djangocms_rest.__version__"}
 
+[tool.setuptools.package-data]
+djangocms_rest = [
+    "static/**",
+    "templates/**",
+]
+
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["djangocms_rest*"]
