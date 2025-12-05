@@ -65,6 +65,8 @@ def patch_page_menu(menu: type[CMSMenu]):
 class NavigationNodeMixin:
     """Mixin to add API endpoint and selection logic to NavigationNode."""
 
+    api_endpoint = None
+
     def get_api_endpoint(self):
         """Get the API endpoint for the navigation node."""
         return self.api_endpoint

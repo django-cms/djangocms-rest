@@ -63,7 +63,7 @@ class PlaceholderSerializer(serializers.Serializer):
                     instance,
                     context=Context({"request": self.request}),
                     language=self.language,
-                    use_cache=True,
+                    use_cache=not getattr(self.request, "_preview_mode", False),
                 )
             if self.request.GET.get("html", False):
                 html = render_html(self.request, instance, self.language)
