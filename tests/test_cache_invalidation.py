@@ -374,7 +374,7 @@ class MenuCacheTests(BaseCMSRestTestCase):
         url = reverse("menu", args=[self.language])
 
         # Menu endpoint should accept preview parameter without error
-        response = self.client.get(url + "?preview=1")
+        response = self.client.get(f"{url}?preview=1")
         self.assertEqual(response.status_code, 200)
         menu = response.json()
         self.assertIsInstance(menu, list)

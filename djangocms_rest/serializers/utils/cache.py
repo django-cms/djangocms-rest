@@ -69,6 +69,5 @@ def get_placeholder_rest_cache(placeholder, lang, site_id, request):
     """
     from django.core.cache import cache
 
-    key = _get_placeholder_cache_key(placeholder, lang, site_id, request, soft=True) + ":rest"
-    content = cache.get(key)
-    return content
+    key = f"{_get_placeholder_cache_key(placeholder, lang, site_id, request, soft=True)}:rest"
+    return cache.get(key)
