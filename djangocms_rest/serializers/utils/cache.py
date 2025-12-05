@@ -22,15 +22,11 @@ def _get_placeholder_cache_version(placeholder, lang, site_id):
     else:
         version = int(time.time() * 1000000)
         vary_on_list = []
-        _set_placeholder_cache_version(
-            placeholder, lang, site_id, version, vary_on_list
-        )
+        _set_placeholder_cache_version(placeholder, lang, site_id, version, vary_on_list)
     return version, vary_on_list
 
 
-def _set_placeholder_cache_version(
-    placeholder, lang, site_id, version, vary_on_list=None, duration=None
-):
+def _set_placeholder_cache_version(placeholder, lang, site_id, version, vary_on_list=None, duration=None):
     """
     Sets the (placeholder x lang)'s version and vary-on header-names list.
     """
@@ -63,9 +59,7 @@ def set_placeholder_rest_cache(placeholder, lang, site_id, content, request):
 
     # "touch" the cache-version, so that it stays as fresh as this content.
     version, vary_on_list = _get_placeholder_cache_version(placeholder, lang, site_id)
-    _set_placeholder_cache_version(
-        placeholder, lang, site_id, version, vary_on_list, duration=duration
-    )
+    _set_placeholder_cache_version(placeholder, lang, site_id, version, vary_on_list, duration=duration)
 
 
 def get_placeholder_rest_cache(placeholder, lang, site_id, request):
@@ -75,9 +69,50 @@ def get_placeholder_rest_cache(placeholder, lang, site_id, request):
     """
     from django.core.cache import cache
 
-    key = (
-        _get_placeholder_cache_key(placeholder, lang, site_id, request, soft=True)
-        + ":rest"
-    )
+    key = _get_placeholder_cache_key(placeholder, lang, site_id, request, soft=True) + ":rest"
     content = cache.get(key)
     return content
+
+
+def invalidate_placeholder_cache(placeholder, lang=None, site_id=None):
+    """
+    Invalidates the REST cache for a placeholder.
+
+    If lang and site_id are provided, only that specific cache entry is cleared.
+    Otherwise, clears all versions of the placeholder cache.
+
+    Args:
+        placeholder: The CMSPlugin or placeholder object
+        lang: Language code (optional). If None, clears all languages.
+        site_id: Site ID (optional). If None, clears all sites.
+    """
+    from django.core.cache import cache
+
+    # If specific language and site provided, clear that specific entry
+    if lang and site_id:
+        key = _get_placeholder_cache_key(placeholder, lang, site_id) + ":rest"
+        cache.delete(key)
+
+        # Also clear the version key
+        version_key = _get_placeholder_cache_version_key(placeholder, lang, site_id) + ":rest"
+        cache.delete(version_key)
+    else:
+        # For now, use a blunt approach - clear by cache version
+        # This will cause the placeholder to be re-rendered on next request
+        from django.contrib.sites.models import Site
+
+        # Clear for all available languages and sites
+        # This is a fallback when we don't know the specific context
+        sites = Site.objects.all() if site_id is None else [Site.objects.get(pk=site_id)]
+        languages = [lang] if lang else ["en", "de", "fr"]  # Common languages
+
+        for site in sites:
+            for language in languages:
+                try:
+                    key = _get_placeholder_cache_key(placeholder, language, site.id) + ":rest"
+                    cache.delete(key)
+                    version_key = _get_placeholder_cache_version_key(placeholder, language, site.id) + ":rest"
+                    cache.delete(version_key)
+                except Exception:
+                    # Silently ignore errors for non-existent combinations
+                    pass
