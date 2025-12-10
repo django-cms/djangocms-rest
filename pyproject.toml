@@ -20,7 +20,7 @@ dependencies = [
     "djangorestframework",
     "djangocms-link>=5.0.0",
     "djangocms-text>=0.8.0",
-    "djangocms-versioning>=2.1.0,<2.4.0",
+    "djangocms-versioning>=2.1.0",
     "pytest-cov>=6.0.0",
     "pytest-django>=4.10.0",
 ]
