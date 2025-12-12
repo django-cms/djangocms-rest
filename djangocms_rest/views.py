@@ -31,7 +31,7 @@ from djangocms_rest.utils import (
     get_object,
     get_site_filtered_queryset,
 )
-from djangocms_rest.views_base import BaseAPIView, BaseListAPIView
+from djangocms_rest.views_base import BaseAPIView, BaseListAPIView, preview_schema
 from djangocms_rest.schemas import extend_placeholder_schema, extend_page_search_schema, menu_schema_class
 
 # Generate the plugin definitions once at module load time
@@ -220,6 +220,7 @@ class PluginDefinitionView(BaseAPIView):
         return Response(definitions)
 
 
+@preview_schema
 @menu_schema_class
 class MenuView(BaseAPIView):
     permission_classes = [IsAllowedPublicLanguage]
@@ -298,7 +299,6 @@ class MenuView(BaseAPIView):
         return result
 
 
-@menu_schema_class
 class SubMenuView(MenuView):
     tag = ShowSubMenu
 
@@ -308,7 +308,6 @@ class SubMenuView(MenuView):
         kwargs.setdefault("nephews", 100)
 
 
-@menu_schema_class
 class BreadcrumbView(MenuView):
     tag = ShowBreadcrumb
     return_key = "ancestors"
