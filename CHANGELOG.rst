@@ -22,7 +22,7 @@ Changelog
 * fix: Respect ?preview for menu views by @fsbraun in https://github.com/django-cms/djangocms-rest/pull/70
 * fix: Check for toolbar attribute before setting preview mode on `?preview=1` request by @fsbraun in https://github.com/django-cms/djangocms-rest/pull/71
 * fix: try to fix the issue with coverage files not uploading by @vinitkumar in https://github.com/django-cms/djangocms-rest/pull/74
-* fix: readthedoc build by @fsbraun in https://github.com/django-cms/djangocms-rest/pull/76
+* fix: readthedocs build by @fsbraun in https://github.com/django-cms/djangocms-rest/pull/76
 * fix: Add page path to node attributes by @fsbraun in https://github.com/django-cms/djangocms-rest/pull/78
 * fix: Add tests to verify caching behavior by @fsbraun in https://github.com/django-cms/djangocms-rest/pull/85
 
