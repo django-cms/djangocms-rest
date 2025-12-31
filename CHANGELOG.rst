@@ -15,7 +15,7 @@ Changelog
 * feat: add package data configuration for static and template files by @metaforx in https://github.com/django-cms/djangocms-rest/pull/81
 * feat: Add page search endpoint by @fsbraun in https://github.com/django-cms/djangocms-rest/pull/64
 * feat: Preserve placeholder order by @metaforx in https://github.com/django-cms/djangocms-rest/pull/83
-* refactor: add distinct operationId in openapi schema for menu endpoin… by @metaforx in https://github.com/django-cms/djangocms-rest/pull/80
+* refactor: add distinct operationId in openapi schema for menu endpoint by @metaforx in https://github.com/django-cms/djangocms-rest/pull/80
 * fix: OpenAPI schema for nested navigation by @metaforx in https://github.com/django-cms/djangocms-rest/pull/58
 * fix: Page serializer returned null for empty meta_description by @fsbraun in https://github.com/django-cms/djangocms-rest/pull/56
 * fix: Add menu endpoint with root_id for the root page by @fsbraun in https://github.com/django-cms/djangocms-rest/pull/57
