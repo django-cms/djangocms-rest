@@ -228,6 +228,7 @@ class RESTRenderer(ContentRenderer):
                 placeholder=instance.placeholder_id,
                 content=content,
                 position=instance.position,
+                disabled=' cms-slot' if getattr(instance.__class__, "is_slot", False) else ''
             )
             placeholder_cache = self._rendered_plugins_by_placeholder.setdefault(
                 placeholder.pk, {}
