@@ -7,7 +7,7 @@ Changelog
 
 * feat: django CMS 5.1 support
 * feat: Add health check endpoint and documentation by @metaforx in https://github.com/django-cms/djangocms-rest/pull/95
-* fix: openapi endpoint naming respect user urls path by @metaforx in https://github.com/django-cms/djangocms-rest/pull/96
+* fix: OpenAPI endpoint naming respects user URL paths by @metaforx in https://github.com/django-cms/djangocms-rest/pull/96
 
 
 1.0.0 (31-12-2025)
