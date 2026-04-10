@@ -2,8 +2,16 @@
 Changelog
 =========
 
-1.0.0
-=====
+1.1.0 (10-04-2026)
+==================
+
+* feat: django CMS 5.1 support
+* feat: Add health check endpoint and documentation by @metaforx in https://github.com/django-cms/djangocms-rest/pull/95
+* fix: openapi endpoint naming respect user urls path by @metaforx in https://github.com/django-cms/djangocms-rest/pull/96
+
+
+1.0.0 (31-12-2025)
+==================
 
 * feat: Add site middleware by @metaforx in https://github.com/django-cms/djangocms-rest/pull/50
 * feat: Add menu endpoints by @fsbraun in https://github.com/django-cms/djangocms-rest/pull/49
