@@ -221,13 +221,14 @@ class RESTRenderer(ContentRenderer):
             for child in getattr(instance, "child_plugin_instances", [])
         ] or None
         content = OBJ_TEMPLATE.format(**highlight_json(data, children=children))
-
+        plugin = self.get_plugin_class(instance)
         if editable:
             content = self.plugin_edit_template.format(
                 pk=instance.pk,
                 placeholder=instance.placeholder_id,
                 content=content,
                 position=instance.position,
+                disabled=' cms-slot' if getattr(plugin, "is_slot", False) else ''
             )
             placeholder_cache = self._rendered_plugins_by_placeholder.setdefault(
                 placeholder.pk, {}
