@@ -5,7 +5,7 @@ Changelog
 1.2.0 (14-05-2026)
 ==================
 
-* feat/expose-parent_plugin_type-and-id by @metaforx in https://github.com/django-cms/djangocms-rest/pull/103
+* feat: expose-parent_plugin_type-and-id by @metaforx in https://github.com/django-cms/djangocms-rest/pull/103
 
 
 1.1.0 (10-04-2026)
