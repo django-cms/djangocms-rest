@@ -1,11 +1,10 @@
 import json
-from typing import Any, TypeVar
+from typing import Any
 from collections.abc import Iterable
 
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator
-from django.db import models
 from django.utils.html import escape, mark_safe
 
 from cms.models import Placeholder
@@ -13,52 +12,23 @@ from cms.plugin_rendering import ContentRenderer
 from cms.utils.plugins import get_plugins
 
 from djangocms_rest.serializers.placeholders import PlaceholderSerializer
-from djangocms_rest.serializers.plugins import GenericPluginSerializer, base_exclude
+from djangocms_rest.serializers.plugins import (
+    get_auto_model_serializer,
+    resolve_plugin_serializer,
+)
 from djangocms_rest.serializers.utils.cache import (
     get_placeholder_rest_cache,
     set_placeholder_rest_cache,
 )
 
 
-ModelType = TypeVar("ModelType", bound=models.Model)
-
-
-def get_auto_model_serializer(model_class: type[ModelType]) -> type:
-    """
-    Build (once) a generic ModelSerializer subclass that excludes
-    common CMS bookkeeping fields.
-    """
-
-    opts = model_class._meta
-    real_fields = {f.name for f in opts.get_fields()}
-    exclude = tuple(base_exclude & real_fields)
-
-    meta_class = type(
-        "Meta",
-        (),
-        {
-            "model": model_class,
-            "exclude": exclude,
-        },
-    )
-    return type(
-        f"{model_class.__name__}AutoSerializer",
-        (GenericPluginSerializer,),
-        {
-            "Meta": meta_class,
-        },
-    )
-
-
-def serialize_cms_plugin(
-    instance: Any | None, context: dict[str, Any]
-) -> dict[str, Any] | None:
-    if not instance or not hasattr(instance, "get_plugin_instance"):
+def serialize_cms_plugin(instance: Any | None, context: dict[str, Any]) -> dict[str, Any] | None:
+    if not instance or not hasattr(instance, "get_plugin_instance"):  # pragma: no cover
         return None
     plugin_instance, plugin = instance.get_plugin_instance()
 
     model_cls = plugin_instance.__class__
-    serializer_cls = getattr(plugin, "serializer_class", None)
+    serializer_cls = resolve_plugin_serializer(plugin, model_cls)
     serializer_cls = serializer_cls or get_auto_model_serializer(model_cls)
     plugin.__class__.serializer_class = serializer_cls
 
@@ -72,10 +42,7 @@ DETAILS_TEMPLATE = (
 )
 
 # Template for a collapsable object/list
-OBJ_TEMPLATE = (
-    "<details open><summary>{open}</summary>"
-    '<div class="indent">{value}</div></details>{close}'
-)
+OBJ_TEMPLATE = "<details open><summary>{open}</summary>" '<div class="indent">{value}</div></details>{close}'
 
 # Tempalte for a non-collasable object/list
 FIXED_TEMPLATE = '{open}<div class="indent">{value}</div>{close}'
@@ -207,17 +174,13 @@ class RESTRenderer(ContentRenderer):
 
     placeholder_edit_template = "{content}{plugin_js}{placeholder_js}"
 
-    def render_plugin(
-        self, instance, context, placeholder=None, editable: bool = False
-    ):
+    def render_plugin(self, instance, context, placeholder=None, editable: bool = False):
         """
         Render a CMS plugin instance using the serialize_cms_plugin function.
         """
         data = serialize_cms_plugin(instance, context) or {}
         children = [
-            self.render_plugin(
-                child, context, placeholder=placeholder, editable=editable
-            )
+            self.render_plugin(child, context, placeholder=placeholder, editable=editable)
             for child in getattr(instance, "child_plugin_instances", [])
         ] or None
         content = OBJ_TEMPLATE.format(**highlight_json(data, children=children))
@@ -230,15 +193,11 @@ class RESTRenderer(ContentRenderer):
                 position=instance.position,
                 disabled=' cms-slot' if getattr(plugin, "is_slot", False) else ''
             )
-            placeholder_cache = self._rendered_plugins_by_placeholder.setdefault(
-                placeholder.pk, {}
-            )
+            placeholder_cache = self._rendered_plugins_by_placeholder.setdefault(placeholder.pk, {})
             placeholder_cache.setdefault("plugins", []).append(instance)
         return mark_safe(content)
 
-    def render_plugins(
-        self, placeholder, language, context, editable=False, template=None
-    ):
+    def render_plugins(self, placeholder, language, context, editable=False, template=None):
         yield "<div class='rest-placeholder' data-placeholder='{placeholder}' data-language='{language}'>".format(
             placeholder=placeholder.slot,
             language=language,
@@ -266,9 +225,7 @@ class RESTRenderer(ContentRenderer):
     def get_plugins_and_placeholder_lot(
         self, placeholder, language, context, editable=False, template=None
     ) -> Iterable[str]:
-        yield from super().render_plugins(
-            placeholder, language, context, editable=editable, template=template
-        )
+        yield from super().render_plugins(placeholder, language, context, editable=editable, template=template)
 
     def serialize_placeholder(self, placeholder, context, language, use_cache=True):
         context.update({"request": self.request})
@@ -313,9 +270,7 @@ class RESTRenderer(ContentRenderer):
 
         return plugin_content
 
-    def serialize_plugins(
-        self, placeholder: Placeholder, language: str, context: dict
-    ) -> list:
+    def serialize_plugins(self, placeholder: Placeholder, language: str, context: dict) -> list:
         plugins = get_plugins(
             self.request,
             placeholder=placeholder,
@@ -328,9 +283,7 @@ class RESTRenderer(ContentRenderer):
             for child_plugin in child_plugins:
                 child_content = serialize_cms_plugin(child_plugin, context)
                 if getattr(child_plugin, "child_plugin_instances", None):
-                    child_content["children"] = serialize_children(
-                        child_plugin.child_plugin_instances
-                    )
+                    child_content["children"] = serialize_children(child_plugin.child_plugin_instances)
                 if child_content:
                     children_list.append(child_content)
             return children_list
@@ -339,10 +292,7 @@ class RESTRenderer(ContentRenderer):
         for plugin in plugins:
             plugin_content = serialize_cms_plugin(plugin, context)
             if getattr(plugin, "child_plugin_instances", None):
-                plugin_content["children"] = serialize_children(
-                    plugin.child_plugin_instances
-                )
+                plugin_content["children"] = serialize_children(plugin.child_plugin_instances)
             if plugin_content:
                 results.append(plugin_content)
         return results
-

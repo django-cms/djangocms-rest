@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     "treebeard",
     "sekizai",
     "djangocms_text",
+    "djangocms_alias",
     "djangocms_rest",
     "tests.test_app",
     "filer",

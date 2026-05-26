@@ -45,9 +45,7 @@ def serialize_fk(
     # Second choice: Use DRF naming conventions to build the default API URL for the related model
     model_name = related_model._meta.model_name
     try:
-        return get_absolute_frontend_url(
-            request, reverse(f"{model_name}-detail", args=(pk,))
-        )
+        return get_absolute_frontend_url(request, reverse(f"{model_name}-detail", args=(pk,)))
     except NoReverseMatch:
         pass
 
@@ -137,11 +135,7 @@ class GenericPluginSerializer(serializers.ModelSerializer):
                         request,
                         field.related_model,
                         getattr(instance, f"{field.name}_id"),
-                        obj=(
-                            getattr(instance, field.name)
-                            if field.is_cached(instance)
-                            else None
-                        ),
+                        obj=(getattr(instance, field.name) if field.is_cached(instance) else None),
                     )
             elif isinstance(field, JSON_FIELDS) and ret.get(field.name):
                 # If the field is a subclass of JSONField, serialize its value directly
@@ -149,14 +143,56 @@ class GenericPluginSerializer(serializers.ModelSerializer):
         return ret
 
 
+def get_plugin_serializer_overrides() -> dict[str, type]:
+    """Return built-in serializer overrides keyed by model label."""
+    overrides: dict[str, type] = {}
+    if apps.is_installed("djangocms_alias"):  # pragma: no cover
+        from djangocms_rest.serializers.alias import AliasInlineSerializer
+
+        overrides["djangocms_alias.AliasPlugin"] = AliasInlineSerializer
+    return overrides
+
+
+def resolve_plugin_serializer(plugin: Any, model_class: type[Model]) -> type | None:
+    """Resolve serializer class using plugin serializer first, then central fallback."""
+    overrides = get_plugin_serializer_overrides()
+    model_label = f"{model_class._meta.app_label}.{model_class.__name__}"
+    return getattr(plugin, "serializer_class", None) or overrides.get(model_label)
+
+
+def get_auto_model_serializer(model_class: type[Model]) -> type:
+    """
+    Build (once) a generic ModelSerializer subclass that excludes
+    common CMS bookkeeping fields.
+    """
+
+    opts = model_class._meta
+    real_fields = {field.name for field in opts.get_fields()}
+    exclude = tuple(base_exclude & real_fields)
+
+    meta_class = type(
+        "Meta",
+        (),
+        {
+            "model": model_class,
+            "exclude": exclude,
+        },
+    )
+    return type(
+        f"{model_class.__name__}AutoSerializer",
+        (GenericPluginSerializer,),
+        {
+            "Meta": meta_class,
+        },
+    )
+
+
 class PluginDefinitionSerializer(serializers.Serializer):
     """
     Serializer for plugin type definitions.
     """
 
-    plugin_type = serializers.CharField(
-        help_text="Unique identifier for the plugin type"
-    )
+    plugin_type = serializers.CharField(help_text="Unique identifier for the plugin type")
     title = serializers.CharField(help_text="Human readable name of the plugin")
     type = serializers.CharField(help_text="Schema type")
     properties = serializers.DictField(help_text="Property definitions")
@@ -191,17 +227,8 @@ class PluginDefinitionSerializer(serializers.Serializer):
         definitions = {}
 
         for plugin in plugin_pool.plugins.values():
-            # Use plugin's serializer_class or create a simple fallback
-            serializer_cls = getattr(plugin, "serializer_class", None)
-
-            if not serializer_cls:
-
-                class DynamicModelSerializer(serializers.ModelSerializer):
-                    class Meta:
-                        model = plugin.model
-                        fields = "__all__"
-
-                serializer_cls = DynamicModelSerializer
+            serializer_cls = resolve_plugin_serializer(plugin, plugin.model)
+            serializer_cls = serializer_cls or get_auto_model_serializer(plugin.model)
 
             try:
                 serializer_instance = serializer_cls()
@@ -212,11 +239,7 @@ class PluginDefinitionSerializer(serializers.Serializer):
                     if field_name in base_exclude:
                         continue
 
-                    properties[
-                        field_name
-                    ] = PluginDefinitionSerializer.map_field_to_schema(
-                        field, field_name
-                    )
+                    properties[field_name] = PluginDefinitionSerializer.map_field_to_schema(field, field_name)
 
                 definitions[plugin.__name__] = {
                     "name": getattr(plugin, "name", plugin.__name__),
@@ -275,9 +298,7 @@ class PluginDefinitionSerializer(serializers.Serializer):
             # Extract nested properties
             properties = {}
             for nested_field_name, nested_field in field.fields.items():
-                properties[
-                    nested_field_name
-                ] = PluginDefinitionSerializer.map_field_to_schema(
+                properties[nested_field_name] = PluginDefinitionSerializer.map_field_to_schema(
                     nested_field, nested_field_name
                 )
             if properties:

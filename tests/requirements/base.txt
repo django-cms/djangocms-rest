@@ -2,6 +2,7 @@
 djangorestframework
 djangocms-text
 django-filer
+djangocms-alias
 beautifulsoup4
 setuptools
 drf-spectacular
