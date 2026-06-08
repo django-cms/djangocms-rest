@@ -1,6 +1,8 @@
 import os
 from tempfile import mkdtemp
 
+from djangocms_rest import __version__
+
 
 def gettext(s):
     return s
@@ -182,6 +184,13 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 10,
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+# Version tracks the package version automatically (see djangocms_rest.__version__).
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Django CMS REST API",
+    "DESCRIPTION": "REST API for running Django CMS headless",
+    "VERSION": __version__,
 }
 
 USE_TZ = True
