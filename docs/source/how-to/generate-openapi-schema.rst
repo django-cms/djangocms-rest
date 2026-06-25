@@ -85,7 +85,7 @@ Typing plugin content
 ----------------------
 
 Plugin payloads are dynamic, so their detailed shape comes from the
-:doc:`plugins endpoint <../reference/plugins>` rather than the static schema. To get rich,
+``/api/plugins/`` endpoint rather than the static schema. To get rich,
 fully typed plugin properties, declare a ``serializer_class`` on your plugins — see
 :doc:`serialize-plugins`.
 

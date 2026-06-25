@@ -12,8 +12,8 @@ Language prefix
 
 All content endpoints are prefixed with a language code, e.g. ``/api/en/pages/``. The
 prefix selects the translation to return. Requesting a language that is not configured —
-or not public, for anonymous users — returns ``404``. The :doc:`languages` endpoint and
-the :doc:`healthcheck` and :doc:`plugins` endpoints are **not** language-prefixed.
+or not public, for anonymous users — returns ``404``. The ``/api/languages/``,
+``/api/plugins/`` and ``/api/healthcheck/`` endpoints are **not** language-prefixed.
 
 The ``preview`` parameter
 -------------------------
@@ -29,7 +29,7 @@ See :doc:`../explanation/preview-and-versioning` and
 The ``html`` parameter
 ----------------------
 
-On the :doc:`placeholders` endpoint, ``?html=1`` adds an ``html`` field containing the
+On the placeholder endpoint (``/placeholders/…``), ``?html=1`` adds an ``html`` field containing the
 placeholder rendered with your django CMS plugin templates. Sekizai blocks (such as ``js``
 and ``css``) are returned as separate fields. Without it, ``html`` is an empty string.
 
@@ -44,8 +44,8 @@ returns ``400``; an unknown site returns ``404``. Requires ``SiteContextMiddlewa
 Pagination
 ----------
 
-List-style endpoints (:ref:`pages-list <pages-list>` and :ref:`page search
-<pages-search>`) use limit/offset pagination and wrap results in an envelope:
+List-style endpoints (``/pages-list/`` and ``/page_search/``) use limit/offset pagination
+and wrap results in an envelope:
 
 .. code-block:: json
 

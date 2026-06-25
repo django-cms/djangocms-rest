@@ -37,7 +37,7 @@ Why content is fetched in two steps
 Placeholders are deliberately decoupled from the page object. The API mirrors this with
 two access patterns, chosen for performance:
 
-* **Single-page endpoints** (:doc:`../reference/pages`, ``/pages/`` and ``/pages/{path}/``)
+* **Single-page endpoints** (``/pages/`` and ``/pages/{path}/``)
   embed each placeholder together with its fully serialized ``content``. One request gives
   you a page ready to render.
 * **List and tree endpoints** (``/pages-list/``, ``/pages-tree/``) return page *metadata
@@ -46,7 +46,7 @@ two access patterns, chosen for performance:
   page.
 
 To get the content of a placeholder from a listing, you follow its ``details`` link to the
-:doc:`placeholder endpoint <../reference/placeholders>`. This is the
+placeholder endpoint (``/placeholders/…``). This is the
 *languages → page → placeholder content* loop from the :doc:`../tutorial/01-quickstart`.
 
 Placeholder order is meaningful
@@ -75,5 +75,5 @@ apphooks: to recognise that a subtree is owned by an application and route it ac
 
 .. seealso::
 
-   * :doc:`../reference/pages` and :doc:`../reference/placeholders` — the exact fields.
+   * :doc:`../reference/index` — the endpoint catalogue (exact fields live in the OpenAPI schema).
    * :doc:`preview-and-versioning` — how the published/draft split rides on this model.

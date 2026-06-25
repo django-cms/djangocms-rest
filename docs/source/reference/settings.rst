@@ -52,14 +52,14 @@ reads them rather than defining them.
    * - Setting
      - Effect on djangocms-rest
    * - ``CMS_LANGUAGES``
-     - Drives the :doc:`languages` endpoint and per-language content resolution, including
+     - Drives the ``/api/languages/`` endpoint and per-language content resolution, including
        ``public``, ``fallbacks`` and ``hide_untranslated``. See
        :doc:`../how-to/configure-languages`.
    * - ``CMS_TEMPLATES``
      - Its presence is the default basis for :ref:`REST_JSON_RENDERING <setting-rest-json-rendering>`.
    * - ``CMS_PLACEHOLDER_CONF``
      - Declares placeholder slots and constraints; reflected by the
-       :doc:`placeholders` endpoint.
+       placeholder endpoint (``/placeholders/…``).
    * - ``CMS_CACHE_DURATIONS``
      - The ``"content"`` duration caps how long serialized placeholder content is cached.
        See :doc:`../explanation/caching`.

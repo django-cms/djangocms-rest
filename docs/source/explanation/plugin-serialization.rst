@@ -73,7 +73,7 @@ The plugin definitions endpoint
 --------------------------------
 
 Plugin payloads are dynamic, so their detailed shape cannot be fully captured by the
-static OpenAPI schema. The :doc:`../reference/plugins` endpoint fills this gap: for every
+static OpenAPI schema. The ``/api/plugins/`` endpoint fills this gap: for every
 registered plugin it returns a JSON-schema-style description derived from the plugin's
 serializer fields — mapping DRF field types to JSON types and formats (``CharField`` →
 ``string``, ``ImageField`` → ``string``/``uri``, choices → ``enum``, and so on).
@@ -96,4 +96,4 @@ Limits to be aware of
 .. seealso::
 
    * :doc:`../how-to/serialize-plugins` — the practical recipes.
-   * :doc:`../reference/plugins` and :doc:`../reference/placeholders` — the endpoints involved.
+   * :doc:`../reference/index` — the endpoint catalogue (and the live schema it points to).

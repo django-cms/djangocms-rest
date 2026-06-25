@@ -10,7 +10,7 @@ What gets cached
 
 The unit of caching is the **serialized placeholder**: the JSON content of one placeholder
 in one language for one site. This is the expensive part of a page response, and it is
-exactly what the :doc:`../reference/placeholders` endpoint returns and what single-page
+exactly what the placeholder endpoint (``/placeholders/…``) returns and what single-page
 endpoints embed.
 
 The cache reuses django CMS's own placeholder cache machinery — the same keys, versioning

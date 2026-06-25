@@ -135,7 +135,7 @@ frontend. The serializer is a standard DRF ``ModelSerializer``:
         serializer_class = HeroPluginSerializer
 
 The same ``serializer_class`` drives both the runtime content payload and the typed
-description returned by the :doc:`plugins endpoint <../reference/plugins>` — so a custom
+description returned by the ``/api/plugins/`` endpoint — so a custom
 serializer also produces richer, fully typed client code.
 
 Verify the type definition
@@ -151,6 +151,6 @@ generators turn into accurate frontend types.
 .. seealso::
 
    * :doc:`../explanation/plugin-serialization` — resolution rules, rich text, and limits.
-   * :doc:`../reference/plugins` — the plugin definitions endpoint.
+   * :doc:`../reference/index` — the endpoint catalogue and live schema.
    * `django CMS — how to create plugins
      <https://docs.django-cms.org/en/latest/how_to/09-custom_plugins.html>`_

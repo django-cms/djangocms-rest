@@ -2,9 +2,8 @@ Configure languages
 ====================
 
 The API serves content per language. Every content endpoint is prefixed with a language
-code (``/api/<language>/…``) and the :doc:`languages endpoint <../reference/languages>`
-reports what is available. This guide configures django CMS so those endpoints behave the
-way you expect.
+code (``/api/<language>/…``) and the ``/api/languages/`` endpoint reports what is
+available. This guide configures django CMS so those endpoints behave the way you expect.
 
 djangocms-rest does not add language settings of its own — it reads django CMS's
 ``CMS_LANGUAGES``. Configuring languages here means configuring django CMS.
@@ -34,7 +33,7 @@ Steps
        ]
 
 2. Configure ``CMS_LANGUAGES``. The per-language keys map directly onto the fields of the
-   :doc:`languages endpoint <../reference/languages>`:
+   ``/api/languages/`` endpoint:
 
    .. code-block:: python
 
@@ -82,7 +81,7 @@ How it behaves
 
 .. seealso::
 
-   * :doc:`../reference/languages` — the response fields in full.
+   * :doc:`../reference/index` — the endpoint catalogue (response fields live in the OpenAPI schema).
    * `django CMS — Internationalisation and Localisation
      <https://docs.django-cms.org/en/latest/explanation/i18n.html>`_
    * `django CMS — Language configuration
