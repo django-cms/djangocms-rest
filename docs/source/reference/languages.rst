@@ -1,58 +1,60 @@
-Languages Endpoints
-===================
+Languages
+=========
 
-**The Languages endpoints provide language information in django CMS.**
+**Reports the languages configured for the current site.**
 
-* This returns all the languages that are configured for the site.
-* Language information includes language codes, names and configuration settings.
-* This information is useful for building a language switcher and handling language fallbacks in decoupled front-end applications.
+Useful for building a language switcher and for handling fallbacks in a decoupled
+frontend. The data reflects django CMS's ``CMS_LANGUAGES`` for the resolved site (see
+:doc:`../how-to/configure-languages`).
 
+This endpoint is **not** language-prefixed.
 
-CMS Reference
--------------
-
-- `Internationalisation and Localisation <https://docs.django-cms.org/en/latest/explanation/i18n.html>`_
-- `Language configuration <https://docs.django-cms.org/en/latest/reference/configuration.html#internationalisation-and-localisation-i18n-and-l10n>`_
-
-
-Endpoints
----------
-
-List Languages
-~~~~~~~~~~~~~~
+List languages
+--------------
 
 **GET** ``/api/languages/``
 
-List of languages available for the site.
+Returns a JSON **array** of the languages available for the site. For anonymous requests
+only public languages are listed.
 
-**Response Attributes:**
+**Response item fields**
 
-* ``code``: Language code (e.g., "en", "de", "fr")
-* ``name``: Human readable language name
-* ``public``: Whether the language is publicly available
-* ``fallbacks``: Array of fallback language codes
-* ``redirect_on_fallback``: Whether to redirect when fallback is used
-* ``hide_untranslated``: Whether to hide untranslated content
+* ``code`` — language code (e.g. ``"en"``, ``"de"``)
+* ``name`` — human-readable language name
+* ``public`` — whether the language is publicly available
+* ``fallbacks`` — array of fallback language codes
+* ``redirect_on_fallback`` — whether django CMS redirects when a fallback is used
+* ``hide_untranslated`` — whether untranslated content is hidden (vs. shown via fallback)
 
-**Query Parameters:**
-
-* ``preview`` (boolean, optional): Has currently no effect on this endpoint
-
-**Example Request:**
+**Example request**
 
 .. code-block:: bash
 
     GET /api/languages/
 
-**Example Response:**
+**Example response**
 
 .. code-block:: json
 
-    {
+    [
+      {
         "code": "en",
         "name": "English",
+        "public": true,
+        "fallbacks": ["de"],
+        "redirect_on_fallback": true,
+        "hide_untranslated": false
+      },
+      {
+        "code": "de",
+        "name": "Deutsch",
         "public": true,
         "fallbacks": ["en"],
         "redirect_on_fallback": true,
         "hide_untranslated": true
-    }
+      }
+    ]
+
+.. seealso::
+
+   :doc:`../how-to/configure-languages` — configuring ``CMS_LANGUAGES`` and fallbacks.

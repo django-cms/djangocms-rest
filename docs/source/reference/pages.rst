@@ -1,7 +1,7 @@
-Pages Endpoints
-===============
+Pages
+=====
 
-**The Pages endpoints provide django CMS pages and their content.**
+**Pages and their content.**
 
 * This returns all pages available for the specified language with their metadata and placeholder information
 * Page information includes titles, URLs, navigation settings, and template configurations
@@ -187,16 +187,29 @@ Retrieve a specific page by its path.
         "details": "http://localhost:8080/api/en/pages/about/",
         "placeholders": [
             {
-                "content_type_id": 5,
-                "object_id": 12,
                 "slot": "content",
-                "details": "http://localhost:8080/api/en/placeholders/5/12/content/"
+                "label": "Content",
+                "language": "en",
+                "content": [
+                    {
+                        "plugin_type": "TextPlugin",
+                        "body": "<p>About us.</p>"
+                    }
+                ],
+                "details": "http://localhost:8080/api/en/placeholders/5/12/content/",
+                "html": ""
             }
         ]
     }
 
+.. note::
 
+   Both single-page endpoints (``/pages/`` and ``/pages/{path}/``) embed each placeholder
+   together with its serialized ``content``. The list and tree endpoints below return page
+   metadata only, with a ``details`` link per placeholder. See
+   :doc:`../explanation/content-model`.
 
+.. _pages-list:
 .. _list-pages-paginated:
 
 List Pages (Paginated)
@@ -280,6 +293,8 @@ same page meta fields as a single page (without ``placeholders``).
             }
         ]
     }
+
+.. _pages-search:
 
 Search Pages
 ~~~~~~~~~~~~

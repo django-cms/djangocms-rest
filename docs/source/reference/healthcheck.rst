@@ -1,5 +1,5 @@
-Health Check Endpoint
-====================
+Health check
+============
 
 **A minimal health check endpoint for API monitoring.**
 

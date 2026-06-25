@@ -1,287 +1,128 @@
-Menu Endpoints
-==============
+Menu
+====
 
-**The Menu endpoints provide navigation nodes using the same structure as the django CMS menu system.**
+**Navigation menus, mirroring the django CMS menu system.**
+
+The menu endpoints return the same structure that django CMS's ``{% show_menu %}``
+template tag produces, as JSON. Use them to build primary navigation, sitemaps and nested
+menus in a decoupled frontend.
+
+.. _navigation-node:
+
+Navigation node
+---------------
+
+Every menu, :doc:`submenu <submenu>` and :doc:`breadcrumb <breadcrumbs>` endpoint returns
+a **JSON array** of *navigation nodes*. Each node has the same shape:
+
+* ``namespace`` — application namespace, or ``null``
+* ``title`` — menu title of the page
+* ``url`` — absolute frontend URL of the page, or ``null``
+* ``api_endpoint`` — absolute API URL to fetch the page (carries ``preview`` when in
+  preview mode), or ``null``
+* ``visible`` — whether the node is shown in navigation
+* ``selected`` — whether the node matches the requested ``path``
+* ``attr`` — extra attributes (django CMS stores e.g. the page ``path`` here)
+* ``level`` — depth in the menu tree (0-based)
+* ``children`` — array of child navigation nodes (same shape, recursive)
 
 .. note::
 
-    The endpoints follow the same structure as the menu in a template. Please refer to the documentation for more details.
-    
-    ``{% show_menu 0 100 100 100 %}``
+   Responses are **arrays**, even when a single root node is returned. Nested levels
+   appear under each node's ``children``.
 
-    ``GET /api/{language}/menu/0/100/100/100/``
+Parameters
+----------
 
-    
+All menu endpoints accept the standard language prefix and the ``preview`` query parameter
+(see :doc:`conventions`). The level/active controls map directly onto ``{% show_menu %}``
+arguments and are optional — omitting a path segment uses its default.
 
-* Menu endpoints are essential for building navigation menus and sitemaps
-* Menu information includes page meta information, state, URLs, visibility settings, and hierarchical relationships
-* Retrieve menu nodes and filter by:
-* * by level ranges
-* * by root ID
-* * by level range  
-* * active/inactive states, 
-* * specific paths
+.. list-table::
+   :header-rows: 1
+   :widths: 25 15 60
 
-
-CMS Reference
--------------
-
-- `User site navigation <https://docs.django-cms.org/en/stable/reference/navigation.html>`_
-- `Customizing the Menu <https://docs.django-cms.org/en/latest/how_to/14-menus.html#>`_
-- `Menu Developer Reference <https://docs.django-cms.org/en/latest/reference/navigation.html#cms-menus>`_
+   * - Segment
+     - Default
+     - Meaning
+   * - ``from_level``
+     - ``0``
+     - First menu level to include
+   * - ``to_level``
+     - ``100``
+     - Last menu level to include
+   * - ``extra_inactive``
+     - ``0``
+     - Levels of inactive children to show
+   * - ``extra_active``
+     - ``1000``
+     - Levels of active children to show
+   * - ``root_id``
+     - –
+     - ``reverse_id`` of a page to use as the menu root
+   * - ``path``
+     - current
+     - Page path used to determine the active/selected node
 
 Endpoints
 ---------
 
-List Menu
-~~~~~~~~~
+The template equivalent of the full form is ``{% show_menu 0 100 100 100 %}``.
 
-**GET** ``/api/{language}/menu/``
+.. list-table::
+   :header-rows: 1
+   :widths: 60 40
 
-Get the complete menu structure for a specific language.
+   * - Path
+     - Equivalent
+   * - ``/api/{language}/menu/``
+     - defaults for all controls
+   * - ``/api/{language}/menu/{from_level}/{to_level}/{extra_inactive}/{extra_active}/``
+     - explicit level controls
+   * - ``/api/{language}/menu/{from_level}/{to_level}/{extra_inactive}/{extra_active}/{path}/``
+     - level controls + active path
+   * - ``/api/{language}/menu/{root_id}/{from_level}/{to_level}/{extra_inactive}/{extra_active}/``
+     - rooted at ``root_id``
+   * - ``/api/{language}/menu/{root_id}/{from_level}/{to_level}/{extra_inactive}/{extra_active}/{path}/``
+     - rooted at ``root_id`` + active path
 
-**Response Attributes:**
-
-* ``namespace``: Application namespace (nullable)
-* ``title``: Menu item title
-* ``url``: Complete URL to the page (nullable)
-* ``api_endpoint``: API endpoint URL for the page (nullable)
-* ``visible``: Whether the menu item is visible
-* ``selected``: Whether the menu item is currently selected
-* ``attr``: Additional attributes (nullable)
-* ``level``: Menu level/depth (nullable)
-* ``children``: Array of child menu items
-
-**Path Parameters:**
-
-* ``language`` (string, required): Language code (e.g., "en", "de")
-
-**Query Parameters:**
-
-* ``preview`` (boolean, optional): Set to true to preview unpublished content (admin access required)
-
-**Example Request:**
+**Example request**
 
 .. code-block:: bash
 
-    GET /api/en/menu/?preview=true
+    GET /api/en/menu/
 
-**Example Response:**
+**Example response**
 
 .. code-block:: json
 
-    {
+    [
+      {
         "namespace": null,
         "title": "Home",
         "url": "http://localhost:8080/en/",
         "api_endpoint": "http://localhost:8080/api/en/pages/",
         "visible": true,
         "selected": false,
-        "attr": null,
+        "attr": { "path": "" },
         "level": 0,
         "children": [
-            {
-                "namespace": null,
-                "title": "About Us",
-                "url": "http://localhost:8080/en/about/",
-                "api_endpoint": "http://localhost:8080/api/en/pages/about/",
-                "visible": true,
-                "selected": false,
-                "attr": null,
-                "level": 1,
-                "children": []
-            }
+          {
+            "namespace": null,
+            "title": "About Us",
+            "url": "http://localhost:8080/en/about/",
+            "api_endpoint": "http://localhost:8080/api/en/pages/about/",
+            "visible": true,
+            "selected": false,
+            "attr": { "path": "about" },
+            "level": 1,
+            "children": []
+          }
         ]
-    }
+      }
+    ]
 
-List Menu by Level Range
-~~~~~~~~~~~~~~~~~~~~~~~~
+.. seealso::
 
-**GET** ``/api/{language}/menu/{from_level}/{to_level}/{extra_inactive}/{extra_active}/``
-
-Get the menu structure filtered by level range and active/inactive states.
-
-**Path Parameters:**
-
-* ``language`` (string, required): Language code (e.g., "en", "de")
-* ``from_level`` (integer, required): Starting level for menu items
-* ``to_level`` (integer, required): Ending level for menu items
-* ``extra_inactive`` (integer, required): Number of extra inactive items to include
-* ``extra_active`` (integer, required): Number of extra active items to include
-
-**Query Parameters:**
-
-* ``preview`` (boolean, optional): Set to true to preview unpublished content (admin access required)
-
-**Example Request:**
-
-.. code-block:: bash
-
-    GET /api/en/menu/0/2/1/1/?preview=true
-
-**Example Response:**
-
-.. code-block:: json
-
-    {
-        "namespace": null,
-        "title": "Home",
-        "url": "http://localhost:8080/en/",
-        "api_endpoint": "http://localhost:8080/api/en/pages/",
-        "visible": true,
-        "selected": false,
-        "attr": null,
-        "level": 0,
-        "children": [
-            {
-                "namespace": null,
-                "title": "About Us",
-                "url": "http://localhost:8080/en/about/",
-                "api_endpoint": "http://localhost:8080/api/en/pages/about/",
-                "visible": true,
-                "selected": false,
-                "attr": null,
-                "level": 1,
-                "children": []
-            }
-        ]
-    }
-
-List Menu by Level Range and Path
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-**GET** ``/api/{language}/menu/{from_level}/{to_level}/{extra_inactive}/{extra_active}/{path}/``
-
-Get the menu structure filtered by level range, active/inactive states, and specific path.
-
-**Path Parameters:**
-
-* ``language`` (string, required): Language code (e.g., "en", "de")
-* ``from_level`` (integer, required): Starting level for menu items
-* ``to_level`` (integer, required): Ending level for menu items
-* ``extra_inactive`` (integer, required): Number of extra inactive items to include
-* ``extra_active`` (integer, required): Number of extra active items to include
-* ``path`` (string, required): Path as starting node for the menu
-
-**Query Parameters:**
-
-* ``preview`` (boolean, optional): Set to true to preview unpublished content (admin access required)
-
-**Example Request:**
-
-.. code-block:: bash
-
-    GET /api/en/menu/0/2/1/1/about/?preview=true
-
-**Example Response:**
-
-.. code-block:: json
-
-    {
-        "namespace": null,
-        "title": "About Us",
-        "url": "http://localhost:8080/en/about/",
-        "api_endpoint": "http://localhost:8080/api/en/pages/about/",
-        "visible": true,
-        "selected": true,
-        "attr": null,
-        "level": 1,
-        "children": []
-    }
-
-List Menu by Root ID and Level Range
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-**GET** ``/api/{language}/menu/{root_id}/{from_level}/{to_level}/{extra_inactive}/{extra_active}/``
-
-Get the menu structure for a given root ID, filtered by level range and active/inactive states.
-
-**Path Parameters:**
-
-* ``language`` (string, required): Language code (e.g., "en", "de")
-* ``root_id`` (string, required): Root ID to start the menu from
-* ``from_level`` (integer, required): Starting level for menu items
-* ``to_level`` (integer, required): Ending level for menu items
-* ``extra_inactive`` (integer, required): Number of extra inactive items to include
-* ``extra_active`` (integer, required): Number of extra active items to include
-
-**Query Parameters:**
-
-* ``preview`` (boolean, optional): Set to true to preview unpublished content (admin access required)
-
-**Example Request:**
-
-.. code-block:: bash
-
-    GET /api/en/menu/1/0/2/1/1/?preview=true
-
-**Example Response:**
-
-.. code-block:: json
-
-    {
-        "namespace": null,
-        "title": "Home",
-        "url": "http://localhost:8080/en/",
-        "api_endpoint": "http://localhost:8080/api/en/pages/",
-        "visible": true,
-        "selected": false,
-        "attr": null,
-        "level": 0,
-        "children": [
-            {
-                "namespace": null,
-                "title": "About Us",
-                "url": "http://localhost:8080/en/about/",
-                "api_endpoint": "http://localhost:8080/api/en/pages/about/",
-                "visible": true,
-                "selected": false,
-                "attr": null,
-                "level": 1,
-                "children": []
-            }
-        ]
-    }
-
-List Menu by Root ID, Level Range and Path
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-**GET** ``/api/{language}/menu/{root_id}/{from_level}/{to_level}/{extra_inactive}/{extra_active}/{path}/``
-
-Get the menu structure filtered by root ID, level range, active/inactive states, and specific path.
-
-**Path Parameters:**
-
-* ``language`` (string, required): Language code (e.g., "en", "de")
-* ``root_id`` (string, required): Root ID to start the menu from
-* ``from_level`` (integer, required): Starting level for menu items
-* ``to_level`` (integer, required): Ending level for menu items
-* ``extra_inactive`` (integer, required): Number of extra inactive items to include
-* ``extra_active`` (integer, required): Number of extra active items to include
-* ``path`` (string, required): Path as starting node for the menu
-
-**Query Parameters:**
-
-* ``preview`` (boolean, optional): Set to true to preview unpublished content (admin access required)
-
-**Example Request:**
-
-.. code-block:: bash
-
-    GET /api/en/menu/1/0/2/1/1/about/?preview=true
-
-**Example Response:**
-
-.. code-block:: json
-
-    {
-        "namespace": null,
-        "title": "About Us",
-        "url": "http://localhost:8080/en/about/",
-        "api_endpoint": "http://localhost:8080/api/en/pages/about/",
-        "visible": true,
-        "selected": true,
-        "attr": null,
-        "level": 1,
-        "children": []
-    }
+   * :doc:`submenu` and :doc:`breadcrumbs` — same node shape, different scope.
+   * `django CMS — navigation <https://docs.django-cms.org/en/latest/reference/navigation.html>`_

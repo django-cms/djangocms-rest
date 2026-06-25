@@ -1,7 +1,7 @@
-Plugins Endpoints
-=================
+Plugins
+=======
 
-**The Plugins endpoints provide plugin definitions for all available plugins in django CMS.**
+**Type definitions for every registered plugin.**
 
 * This returns all available plugin type definitions with their properties and schemas
 * Plugin definitions include the plugin type identifier, human-readable title, and property definitions
@@ -13,14 +13,14 @@ Plugins Endpoints
     You can automatically generate type-safe schemas for your typescript frontend application using tools like `QuickType <https://quicktype.io/typescript>`_.
 
 
-Howto
+How-to
 ------
-- :doc:`Plugin Creation & Serialization <../how-to/02-plugin-creation>`
+- :doc:`Serialize plugins (default and custom) <../how-to/serialize-plugins>`
 
 CMS Reference
 -------------
 
-- `Howto create plugins <https://docs.django-cms.org/en/latest/how_to/09-custom_plugins.html#how-to-create-plugins>`_
+- `How to create plugins <https://docs.django-cms.org/en/latest/how_to/09-custom_plugins.html#how-to-create-plugins>`_
 
 Endpoints
 ---------
@@ -47,23 +47,29 @@ Get all plugin type definitions available in the CMS.
 
 .. code-block:: bash
 
-    GET /api/plugins/?preview=true
+    GET /api/plugins/
 
 **Example Response:**
 
+Returns a JSON **array** with one definition per registered plugin:
+
 .. code-block:: json
 
-    {
+    [
+      {
         "plugin_type": "TextPlugin",
         "title": "Text",
         "type": "object",
         "properties": {
-            "body": {
-                "type": "string",
-                "description": "Text content"
-            }
+          "body": {
+            "type": "string"
+          }
         }
-    }
+      }
+    ]
 
 .. note::
-    Use custom serializers to define the properties of your plugin in detail. This also allows a fully typed API response and drastically improves the developer experience.
+    Definitions are derived from each plugin's serializer fields. Declaring a custom
+    ``serializer_class`` yields precise, fully typed properties (types, formats, help
+    text) — see :doc:`../how-to/serialize-plugins` and
+    :doc:`../explanation/plugin-serialization`.

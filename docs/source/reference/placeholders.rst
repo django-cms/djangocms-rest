@@ -1,29 +1,32 @@
-Placeholders Endpoints
-======================
+Placeholders
+============
 
-**The Placeholders endpoints provide placeholder content in django CMS.**
+**The serialized plugin content of a single placeholder.**
 
-* Used to retrieve content from placeholders object linked to a specific page
-* This essentially returns all plugins in a placeholder as a nested JSON tree according to the defined placeholders in `CMS_PLACEHOLDER_CONF`
-* The content is rendered as HTML if the ``?html=1`` parameter is added to the API URL using Django CMS template rendering
-* Serialized content is either using ``ModelSerializer`` as a default or a ``CustomSerializer`` defined in your plugins configuration
+A placeholder holds the actual content of a page region as a list of serialized plugins
+(a nested JSON tree). You normally reach this endpoint by following the ``details`` link
+returned for a placeholder by the :doc:`pages <pages>` listing endpoints — see
+:doc:`../explanation/content-model` for why content is fetched in two steps.
 
-CMS Reference
--------------
+Add ``?html=1`` to additionally receive the placeholder rendered as HTML using your django
+CMS plugin templates (see :doc:`conventions`).
 
-- `Howto define placeholders in CMS_PLACEHOLDER_CONF <https://docs.django-cms.org/en/latest/reference/configuration.html#cms-placeholders>`_
-- `Howto create plugins <https://docs.django-cms.org/en/latest/introduction/04-plugins.html#plugins>`_
+.. seealso::
+
+   * :doc:`../explanation/plugin-serialization` — how plugin content becomes JSON.
+   * `django CMS — CMS_PLACEHOLDER_CONF
+     <https://docs.django-cms.org/en/latest/reference/configuration.html#std-setting-CMS_PLACEHOLDER_CONF>`_
 
 Endpoints
 ---------
 
 Retrieve Placeholder
-~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
 
 **GET** ``/api/{language}/placeholders/{content_type_id}/{object_id}/{slot}/``
 
-Placeholder contain the dynamic content. This view retrieves the content as a structured nested object.
-You can get a direct link to build the query or all attributes from the :doc:`Pages <pages>`.
+Retrieves the content of one placeholder as a structured object. The ``content_type_id``,
+``object_id`` and ``slot`` come from the ``details`` link in a :doc:`page <pages>` response.
 
 **Response Attributes:**
 
