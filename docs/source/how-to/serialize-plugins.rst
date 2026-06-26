@@ -31,7 +31,9 @@ serialized for you. A plugin with no extra fields still serializes its type:
 The template is still useful in headless mode: it lets editors see the plugin in the
 django CMS structure board and powers the optional ``?html=1`` rendering.
 
-Add the plugin to a page, then fetch the placeholder content:
+Add the plugin to a page, then fetch the placeholder content (note that the specific
+content type and object primary keys likely are different for your setup, run
+``curl http://localhost:8080/api/en/pages/`` to find out what's correct for you):
 
 .. code-block:: bash
 
