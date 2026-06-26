@@ -35,19 +35,25 @@ Add the plugin to a page, then fetch the placeholder content:
 
 .. code-block:: bash
 
-    curl "http://localhost:8080/api/en/placeholders/5/11/content/"
+    curl "http://localhost:8080/api/en/placeholders/18/1/content/"
 
 .. code-block:: json
 
     {
       "slot": "content",
       "content": [
-        { "plugin_type": "HelloPlugin" }
+        {
+          "id": 1,
+          "parent_plugin_type": null,
+          "plugin_type": "HelloPlugin"
+        }
       ],
       "html": ""
     }
 
-A plugin with model fields serializes each field by name:
+Every serialized plugin carries ``id``, ``parent_plugin_type`` (the type of its parent
+plugin, or ``null`` at the top level) and ``plugin_type``. A plugin with model fields adds
+each field by name:
 
 .. code-block:: python
 
@@ -75,6 +81,8 @@ Its serialized form:
 .. code-block:: json
 
     {
+      "id": 4,
+      "parent_plugin_type": null,
       "plugin_type": "HeroPlugin",
       "title": "A custom page hero",
       "description": "Important teaser content.",
@@ -82,9 +90,11 @@ Its serialized form:
       "link": "http://localhost:8080/api/en/pages/about/"
     }
 
-Foreign keys are resolved to API endpoints where possible — note how ``link`` becomes the
-target page's API URL. See :doc:`../explanation/plugin-serialization` for the resolution
-rules.
+Foreign keys are resolved to API endpoints where possible — note how ``link`` (a
+``PageField``) becomes the target page's API URL rather than a raw id. This matches the
+real behaviour of, for example, a link plugin whose ``page`` field resolves to
+``"http://localhost:8080/api/en/pages/"``. See :doc:`../explanation/plugin-serialization`
+for the resolution rules.
 
 Nested plugins
 --------------

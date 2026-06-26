@@ -56,10 +56,11 @@ Rich text: HTML and structured JSON
 -----------------------------------
 
 With ``djangocms-text`` installed, a text plugin exposes **both** representations: an HTML
-``body`` and a structured ``json`` document (plus an ``rte`` marker identifying the
-editor, e.g. ``tiptap``). A frontend can render the HTML directly or consume the
-structured JSON to build its own components — and any links inside are resolved as
-described above.
+``body`` and a structured ``json`` document, plus an ``rte`` marker identifying the editor
+(it may be an empty string when no rich-text editor is configured, and ``json`` is
+``null`` when the plugin was saved without structured data). A frontend can render the
+HTML directly or consume the structured JSON to build its own components — and any links
+inside are resolved as described above.
 
 Nested plugins
 --------------

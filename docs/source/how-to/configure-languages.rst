@@ -66,15 +66,17 @@ Verify
 
     curl http://localhost:8080/api/languages/
 
-The endpoint lists only **public** languages for the current site. With the configuration
-above, an anonymous request returns English only; ``de`` appears once it is marked
-``public`` or when you request it as an authenticated editor.
+The endpoint lists **all** configured languages for the current site, each with its
+``public`` flag — so ``de`` appears in the list with ``"public": false``. Use the flag in
+the frontend to decide which languages to surface.
 
 How it behaves
 --------------
 
-* Requesting a non-public or unconfigured language code on any content endpoint returns
-  ``404 Not Found`` rather than leaking that the language exists.
+* The languages endpoint reports every configured language (public and non-public); it
+  does not hide non-public ones. Public-only filtering happens on the *content* endpoints.
+* Requesting a non-public or unconfigured language code on a content endpoint returns
+  ``404 Not Found`` (for anonymous users) rather than leaking that the language exists.
 * When a page has no translation for the requested language, django CMS's ``fallbacks``
   apply: the API returns the fallback translation. Set ``hide_untranslated: True`` to
   return ``404`` instead of falling back.

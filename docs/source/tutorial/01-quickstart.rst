@@ -79,7 +79,9 @@ django CMS ``CMS_LANGUAGES`` configuration.
 
     curl http://localhost:8080/api/languages/
 
-You get back a **list** of the languages configured for the current site:
+You get back a **list** of every language configured for the current site. Each entry
+carries a ``public`` flag — non-public languages (here, ``fr``) are listed too, so a
+language switcher can decide what to show:
 
 .. code-block:: json
 
@@ -88,14 +90,30 @@ You get back a **list** of the languages configured for the current site:
         "code": "en",
         "name": "English",
         "public": true,
-        "fallbacks": ["de"],
+        "fallbacks": ["it"],
+        "redirect_on_fallback": true,
+        "hide_untranslated": false
+      },
+      {
+        "code": "it",
+        "name": "Italiano",
+        "public": true,
+        "fallbacks": ["en"],
+        "redirect_on_fallback": true,
+        "hide_untranslated": false
+      },
+      {
+        "code": "fr",
+        "name": "French",
+        "public": false,
+        "fallbacks": ["en", "it"],
         "redirect_on_fallback": true,
         "hide_untranslated": false
       }
     ]
 
-Pick a ``code`` from the response — this tutorial uses ``en``. Every content endpoint is
-prefixed with a language code.
+Pick a public ``code`` from the response — this tutorial uses ``en``. Every content
+endpoint is prefixed with a language code.
 
 Step 6 — Fetch the home page
 ----------------------------
@@ -108,18 +126,32 @@ site's root page.
     curl http://localhost:8080/api/en/pages/
 
 The response is a single page object. Note the ``placeholders`` array near the bottom —
-each entry describes a content region of the page and embeds its serialized ``content``:
+each entry describes a content region of the page and embeds its serialized ``content``
+(abridged below; your timestamps and ids will differ):
 
 .. code-block:: json
 
     {
       "title": "Home",
-      "path": "",
-      "absolute_url": "http://localhost:8080/en/",
-      "is_home": true,
+      "page_title": "Home",
+      "menu_title": "Home",
+      "meta_description": "",
+      "redirect": "",
+      "in_navigation": true,
+      "soft_root": false,
+      "template": "INHERIT",
+      "xframe_options": "",
+      "limit_visibility_in_menu": false,
       "language": "en",
+      "path": "",
+      "absolute_url": "http://localhost:8080/",
+      "is_home": true,
+      "login_required": false,
       "languages": ["en"],
-      "template": "home.html",
+      "is_preview": false,
+      "application_namespace": "",
+      "creation_date": "2026-06-25T20:25:15.694029Z",
+      "changed_date": "2026-06-25T20:25:15.694137Z",
       "details": "http://localhost:8080/api/en/pages/",
       "placeholders": [
         {
@@ -128,11 +160,24 @@ each entry describes a content region of the page and embeds its serialized ``co
           "language": "en",
           "content": [
             {
+              "id": 1,
+              "parent_plugin_type": null,
               "plugin_type": "TextPlugin",
-              "body": "<p>Hello World!</p>"
+              "body": "<p>Hello World!</p>",
+              "json": {
+                "type": "doc",
+                "content": [
+                  {
+                    "type": "paragraph",
+                    "attrs": {"textAlign": "left"},
+                    "content": [{"text": "Hello World!", "type": "text"}]
+                  }
+                ]
+              },
+              "rte": ""
             }
           ],
-          "details": "http://localhost:8080/api/en/placeholders/5/11/content/",
+          "details": "http://localhost:8080/api/en/placeholders/18/1/content/",
           "html": ""
         }
       ]
@@ -154,7 +199,7 @@ content directly from that link:
 
 .. code-block:: bash
 
-    curl "http://localhost:8080/api/en/placeholders/5/11/content/"
+    curl "http://localhost:8080/api/en/placeholders/18/1/content/"
 
 .. code-block:: json
 
@@ -164,21 +209,35 @@ content directly from that link:
       "language": "en",
       "content": [
         {
+          "id": 1,
+          "parent_plugin_type": null,
           "plugin_type": "TextPlugin",
-          "body": "<p>Hello World!</p>"
+          "body": "<p>Hello World!</p>",
+          "json": {
+            "type": "doc",
+            "content": [
+              {
+                "type": "paragraph",
+                "attrs": {"textAlign": "left"},
+                "content": [{"text": "Hello World!", "type": "text"}]
+              }
+            ]
+          },
+          "rte": ""
         }
       ],
-      "details": "http://localhost:8080/api/en/placeholders/5/11/content/",
+      "details": "http://localhost:8080/api/en/placeholders/18/1/content/",
       "html": ""
     }
 
-Add ``?html=1`` to also receive the placeholder rendered as HTML, using your django CMS
-plugin templates — handy when you want to migrate gradually or render rich text without a
-custom component:
+The text plugin exposes both an HTML ``body`` and a structured ``json`` document — render
+whichever suits your frontend. Add ``?html=1`` to also receive the placeholder rendered as
+HTML using your django CMS plugin templates (the ``html`` field, empty above, is then
+populated):
 
 .. code-block:: bash
 
-    curl "http://localhost:8080/api/en/placeholders/5/11/content/?html=1"
+    curl "http://localhost:8080/api/en/placeholders/18/1/content/?html=1"
 
 That's the whole loop: **languages → page → placeholder content**. Everything else the
 API offers (menus, breadcrumbs, search, plugin type definitions) builds on these same

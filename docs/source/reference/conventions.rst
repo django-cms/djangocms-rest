@@ -22,9 +22,10 @@ Add ``preview`` to a page, page-list, page-tree, placeholder or menu request to 
 **draft** content instead of published content. Any value other than ``0`` or ``false``
 enables it (``?preview``, ``?preview=true`` and ``?preview=1`` are equivalent).
 
-Preview requires an authenticated admin (staff) user; per-page permissions still apply.
-See :doc:`../explanation/preview-and-versioning` and
-:doc:`../how-to/access-preview-content`.
+Preview requires an authenticated admin (staff) user; per-page permissions still apply. A
+preview request without an authenticated admin returns ``403`` with
+``{"detail": "Authentication credentials were not provided."}``. See
+:doc:`../explanation/preview-and-versioning` and :doc:`../how-to/access-preview-content`.
 
 The ``html`` parameter
 ----------------------
@@ -78,6 +79,8 @@ Errors
 ------
 
 * ``400 Bad Request`` — malformed ``X-Site-ID``.
+* ``403 Forbidden`` — a ``preview`` request without an authenticated admin user
+  (``{"detail": "Authentication credentials were not provided."}``).
 * ``404 Not Found`` — unknown/forbidden language, unknown site, missing page, or content
-  the current user may not view. The API returns ``404`` (not ``403``) for permission
-  failures so it does not reveal that hidden content exists.
+  the current user may not view. For *object-level* permission failures the API returns
+  ``404`` (not ``403``) so it does not reveal that hidden content exists.

@@ -38,7 +38,8 @@ Content
    * - Endpoint
      - Returns
    * - ``GET /api/languages/``
-     - Configured (public) languages for the site. Not language-prefixed.
+     - All configured languages for the site, each with a ``public`` flag (non-public
+       languages are listed too). Not language-prefixed.
    * - ``GET /api/{language}/pages/``
      - The home page, with placeholder content embedded.
    * - ``GET /api/{language}/pages/{path}/``
@@ -79,7 +80,8 @@ navigation nodes**. Trailing path segments are optional; omitting one uses its d
        ``100/–/100``) and trailing ``{path}``.
    * - ``GET /api/{language}/breadcrumbs/…``
      - ``{% show_breadcrumb %}``. Optional ``{start_level}`` (default ``0``) and trailing
-       ``{path}``. The trail is a flat array of ancestors, not nested.
+       ``{path}``. Returns the ancestor trail as navigation nodes (same shape as ``menu``;
+       nodes may carry ``children``).
 
 See `django CMS — navigation
 <https://docs.django-cms.org/en/latest/reference/navigation.html>`_ for the underlying
