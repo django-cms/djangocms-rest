@@ -31,9 +31,20 @@ Steps
 
        SPECTACULAR_SETTINGS = {
            "TITLE": "My project API",
+           "DESCRIPTION": "Headless django CMS content API",
+           # Reported as `info.version` in the schema. Use *your* project's API
+           # version — tying it to a constant keeps it in step with releases:
+           #     from myproject import __version__
+           #     "VERSION": __version__,
            "VERSION": "1.0.0",
            "SERVE_INCLUDE_SCHEMA": False,
        }
+
+   .. note::
+
+      ``VERSION`` is your API's version, not the djangocms-rest version. (djangocms-rest's
+      own test project happens to set ``"VERSION": djangocms_rest.__version__`` — that's a
+      convenient pattern for tracking a constant, not a value you should copy verbatim.)
 
 3. Expose the schema and documentation views:
 
