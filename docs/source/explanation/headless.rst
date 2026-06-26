@@ -62,14 +62,6 @@ Even headless, django CMS's editing UI keeps working:
 * The decoupled frontend can be embedded back into django CMS (e.g. via an iframe) so
   editors use *Structure mode* to edit content in place.
 
-Content without pages
-----------------------
-
-Not every project is page-shaped. If you only need a fixed set of content regions, django
-CMS *aliases* (the ``djangocms-aliases`` package) let you define placeholders that are not
-attached to any page; djangocms-rest exposes their content through the same placeholder
-mechanism.
-
 .. seealso::
 
    * :doc:`content-model` — how pages, placeholders and plugins fit together.
