@@ -10,7 +10,7 @@ placeholders carry content* — which is the key to everything else in these doc
 
 .. note::
 
-   You need a working django CMS 5 project with at least one published page. If you do
+   You need a working django CMS 4.1+ project with at least one published page. If you do
    not have one yet, follow `Installing django CMS by hand
    <https://docs.django-cms.org/en/latest/introduction/01-install.html>`_ first.
 
