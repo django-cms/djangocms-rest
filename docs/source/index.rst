@@ -62,5 +62,6 @@ Follow our step-by-step tutorial to set up djangocms-rest in your project.
    tutorial/index
    how-to/index
    reference/index
+   explanation/index
    contributing
    changelog

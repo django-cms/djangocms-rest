@@ -3,8 +3,6 @@ from typing import ParamSpec, TypeVar
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.functional import cached_property
 
-from cms.toolbar.toolbar import CMSToolbar
-
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAdminUser
 from rest_framework.views import APIView
@@ -77,7 +75,12 @@ class BaseAPIMixin:
                 "false",
             )
             if self.request._preview_mode:
-                if not hasattr(self.request, "toolbar"):  # Create toolbar if not present to mark preview mode
+                if not hasattr(self.request, "toolbar"):
+                    # Create toolbar if not present to mark preview mode
+                    # Imported lazily so this module is safe to import during
+                    # cms_config autodiscovery (before cms.cms_extension exists).
+                    from cms.toolbar.toolbar import CMSToolbar
+
                     self.request.toolbar = CMSToolbar(self.request)
                 self.request.toolbar.preview_mode_active = True
         return self.request._preview_mode
