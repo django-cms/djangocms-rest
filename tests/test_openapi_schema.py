@@ -148,6 +148,7 @@ class OpenAPISchemaTestCase(RESTTestCase):
                             and "$ref" not in prop_def
                             and "allOf" not in prop_def
                             and "anyOf" not in prop_def
+                            and "oneOf" not in prop_def
                         ):
                             errors.append(
                                 f"Schema '{schema_name}' property '{prop_name}' has no type or reference defined"
