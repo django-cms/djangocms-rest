@@ -9,7 +9,6 @@ from cms.models import Page, PageContent
 from cms.utils.i18n import force_language, get_current_language
 from menus import base
 
-
 try:
     from filer.models import File
 except ImportError:

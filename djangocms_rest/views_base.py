@@ -104,12 +104,8 @@ class BaseAPIView(BaseAPIMixin, APIView):
     This is a base class for all API views. It sets the allowed methods to GET and OPTIONS.
     """
 
-    pass
-
 
 class BaseListAPIView(BaseAPIMixin, ListAPIView):
     """
     This is a base class for all list API views. It supports default pagination and sets the allowed methods to GET and OPTIONS.
     """
-
-    pass

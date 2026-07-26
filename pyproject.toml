@@ -84,3 +84,32 @@ include = ["djangocms_rest*"]
 
 [tool.ruff]
 line-length = 119
+
+[tool.ruff.lint]
+ignore = [
+    # mutable-class-default: Django class attributes (Media.css, inlines, ...)
+    # are declarative, not mutable defaults
+    "RUF012",
+    # collapsible-if: nested ifs often read better than a combined condition
+    "SIM102",
+    # blind-except: catching Exception is intentional at API boundaries
+    "BLE001",
+    # try-except-continue: skipping a plugin that fails to introspect is intentional
+    "S112",
+]
+
+[tool.ruff.lint.isort]
+# stdlib, then django, then django CMS, then the remaining third-party packages
+section-order = [
+    "future",
+    "standard-library",
+    "django",
+    "cms",
+    "third-party",
+    "first-party",
+    "local-folder",
+]
+
+[tool.ruff.lint.isort.sections]
+django = ["django"]
+cms = ["cms", "menus"]

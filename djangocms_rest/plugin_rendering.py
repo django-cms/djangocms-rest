@@ -1,6 +1,6 @@
 import json
-from typing import Any, TypeVar
 from collections.abc import Iterable
+from typing import Any, TypeVar
 
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ValidationError
@@ -18,7 +18,6 @@ from djangocms_rest.serializers.utils.cache import (
     get_placeholder_rest_cache,
     set_placeholder_rest_cache,
 )
-
 
 ModelType = TypeVar("ModelType", bound=models.Model)
 
@@ -50,9 +49,7 @@ def get_auto_model_serializer(model_class: type[ModelType]) -> type:
     )
 
 
-def serialize_cms_plugin(
-    instance: Any | None, context: dict[str, Any]
-) -> dict[str, Any] | None:
+def serialize_cms_plugin(instance: Any | None, context: dict[str, Any]) -> dict[str, Any] | None:
     if not instance or not hasattr(instance, "get_plugin_instance"):
         return None
     plugin_instance, plugin = instance.get_plugin_instance()
@@ -72,10 +69,7 @@ DETAILS_TEMPLATE = (
 )
 
 # Template for a collapsable object/list
-OBJ_TEMPLATE = (
-    "<details open><summary>{open}</summary>"
-    '<div class="indent">{value}</div></details>{close}'
-)
+OBJ_TEMPLATE = "<details open><summary>{open}</summary>" '<div class="indent">{value}</div></details>{close}'
 
 # Tempalte for a non-collasable object/list
 FIXED_TEMPLATE = '{open}<div class="indent">{value}</div>{close}'
@@ -166,8 +160,7 @@ def highlight_json(
         dict[str, str]: A dictionary containing the formatted representation with keys 'open', 'close', and 'value'.
     """
     has_children = children is not None
-    if field in json_data:
-        del json_data[field]
+    json_data.pop(field, None)
 
     items = [
         DETAILS_TEMPLATE.format(
@@ -207,17 +200,13 @@ class RESTRenderer(ContentRenderer):
 
     placeholder_edit_template = "{content}{plugin_js}{placeholder_js}"
 
-    def render_plugin(
-        self, instance, context, placeholder=None, editable: bool = False
-    ):
+    def render_plugin(self, instance, context, placeholder=None, editable: bool = False):
         """
         Render a CMS plugin instance using the serialize_cms_plugin function.
         """
         data = serialize_cms_plugin(instance, context) or {}
         children = [
-            self.render_plugin(
-                child, context, placeholder=placeholder, editable=editable
-            )
+            self.render_plugin(child, context, placeholder=placeholder, editable=editable)
             for child in getattr(instance, "child_plugin_instances", [])
         ] or None
         content = OBJ_TEMPLATE.format(**highlight_json(data, children=children))
@@ -228,21 +217,14 @@ class RESTRenderer(ContentRenderer):
                 placeholder=instance.placeholder_id,
                 content=content,
                 position=instance.position,
-                disabled=' cms-slot' if getattr(plugin, "is_slot", False) else ''
+                disabled=" cms-slot" if getattr(plugin, "is_slot", False) else "",
             )
-            placeholder_cache = self._rendered_plugins_by_placeholder.setdefault(
-                placeholder.pk, {}
-            )
+            placeholder_cache = self._rendered_plugins_by_placeholder.setdefault(placeholder.pk, {})
             placeholder_cache.setdefault("plugins", []).append(instance)
         return mark_safe(content)
 
-    def render_plugins(
-        self, placeholder, language, context, editable=False, template=None
-    ):
-        yield "<div class='rest-placeholder' data-placeholder='{placeholder}' data-language='{language}'>".format(
-            placeholder=placeholder.slot,
-            language=language,
-        )
+    def render_plugins(self, placeholder, language, context, editable=False, template=None):
+        yield f"<div class='rest-placeholder' data-placeholder='{placeholder.slot}' data-language='{language}'>"
         placeholder_data = PlaceholderSerializer(
             instance=placeholder,
             language=language,
@@ -266,9 +248,7 @@ class RESTRenderer(ContentRenderer):
     def get_plugins_and_placeholder_lot(
         self, placeholder, language, context, editable=False, template=None
     ) -> Iterable[str]:
-        yield from super().render_plugins(
-            placeholder, language, context, editable=editable, template=template
-        )
+        yield from super().render_plugins(placeholder, language, context, editable=editable, template=template)
 
     def serialize_placeholder(self, placeholder, context, language, use_cache=True):
         context.update({"request": self.request})
@@ -313,9 +293,7 @@ class RESTRenderer(ContentRenderer):
 
         return plugin_content
 
-    def serialize_plugins(
-        self, placeholder: Placeholder, language: str, context: dict
-    ) -> list:
+    def serialize_plugins(self, placeholder: Placeholder, language: str, context: dict) -> list:
         plugins = get_plugins(
             self.request,
             placeholder=placeholder,
@@ -328,9 +306,7 @@ class RESTRenderer(ContentRenderer):
             for child_plugin in child_plugins:
                 child_content = serialize_cms_plugin(child_plugin, context)
                 if getattr(child_plugin, "child_plugin_instances", None):
-                    child_content["children"] = serialize_children(
-                        child_plugin.child_plugin_instances
-                    )
+                    child_content["children"] = serialize_children(child_plugin.child_plugin_instances)
                 if child_content:
                     children_list.append(child_content)
             return children_list
@@ -339,10 +315,7 @@ class RESTRenderer(ContentRenderer):
         for plugin in plugins:
             plugin_content = serialize_cms_plugin(plugin, context)
             if getattr(plugin, "child_plugin_instances", None):
-                plugin_content["children"] = serialize_children(
-                    plugin.child_plugin_instances
-                )
+                plugin_content["children"] = serialize_children(plugin.child_plugin_instances)
             if plugin_content:
                 results.append(plugin_content)
         return results
-

@@ -1,5 +1,6 @@
 import time
-from datetime import datetime
+
+from django.utils.timezone import now
 
 from cms.cache.placeholder import (
     _get_placeholder_cache_key,
@@ -53,7 +54,7 @@ def set_placeholder_rest_cache(placeholder, lang, site_id, content, request):
 
     duration = min(
         get_cms_setting("CACHE_DURATIONS")["content"],
-        placeholder.get_cache_expiration(request, datetime.now()),
+        placeholder.get_cache_expiration(request, now()),
     )
     cache.set(key, {"content": content}, duration)
 
