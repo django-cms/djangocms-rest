@@ -1,7 +1,8 @@
 from django.contrib.sites.models import Site
-from djangocms_rest.utils import get_site_filtered_queryset
+
 from rest_framework.reverse import reverse
 
+from djangocms_rest.utils import get_site_filtered_queryset
 from tests.base import BaseCMSRestTestCase
 from tests.types import PAGE_META_FIELD_TYPES
 from tests.utils import assert_field_types

@@ -34,9 +34,7 @@ class IsAllowedPublicLanguage(IsAllowedLanguage):
         super().has_permission(request, view)
         language = view.kwargs.get("language")
         languages = get_languages(get_current_site(request).pk)
-        public_languages = [
-            lang["code"] for lang in languages if lang.get("public", True)
-        ]
+        public_languages = [lang["code"] for lang in languages if lang.get("public", True)]
         if language not in public_languages:
             raise NotFound()
         return True
@@ -47,9 +45,7 @@ class CanViewPage(IsAllowedLanguage):
     Check whether the provided language is allowed and the user can view the page.
     """
 
-    def has_object_permission(
-        self, request: Request, view: BaseAPIView, obj: Page
-    ) -> bool:
+    def has_object_permission(self, request: Request, view: BaseAPIView, obj: Page) -> bool:
         if isinstance(obj, Page):
             if not super().has_permission(request, view):
                 raise NotFound()
@@ -62,9 +58,7 @@ class CanViewPageContent(IsAllowedLanguage):
     Object-level permission to check if the user is allowed to view PageContent.
     """
 
-    def has_object_permission(
-        self, request: Request, view: BaseAPIView, obj: PageContent
-    ) -> bool:
+    def has_object_permission(self, request: Request, view: BaseAPIView, obj: PageContent) -> bool:
         """
         # Check if the object is a PageContent instance and enforce page view permission
         """

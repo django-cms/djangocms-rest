@@ -14,3 +14,14 @@ class DemoStoriesApphook(CMSApp):
 
     def get_rest_urls(self, page=None, language=None, **kwargs):
         return ["tests.test_app.rest_urls"]
+
+
+@apphook_pool.register
+class DemoPlainApphook(CMSApp):
+    """Plain apphook without REST support -- must be ignored by the REST resolver."""
+
+    name = "Demo Plain"
+    app_name = "demo_plain"
+
+    def get_urls(self, page=None, language=None, **kwargs):
+        return ["tests.test_app.rest_urls"]

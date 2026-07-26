@@ -69,7 +69,7 @@ DETAILS_TEMPLATE = (
 )
 
 # Template for a collapsable object/list
-OBJ_TEMPLATE = "<details open><summary>{open}</summary>" '<div class="indent">{value}</div></details>{close}'
+OBJ_TEMPLATE = '<details open><summary>{open}</summary><div class="indent">{value}</div></details>{close}'
 
 # Tempalte for a non-collasable object/list
 FIXED_TEMPLATE = '{open}<div class="indent">{value}</div>{close}'
@@ -104,8 +104,8 @@ def highlight_data(json_data: Any, drop_frame: bool = False) -> str:
             classes = "str ellipsis"
 
         if is_valid_url(json_data):
-            return f'<span class="{ classes }">"<a href="{ json_data }">{escapestr(json_data)}</a>"</span>'
-        return f'<span class="{ classes }">"{escapestr(json_data)}"</span>'
+            return f'<span class="{classes}">"<a href="{json_data}">{escapestr(json_data)}</a>"</span>'
+        return f'<span class="{classes}">"{escapestr(json_data)}"</span>'
     if isinstance(json_data, bool):
         return f'<span class="bool">{str(json_data).lower()}</span>'
     if isinstance(json_data, (int, float)):

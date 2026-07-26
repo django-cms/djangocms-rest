@@ -1,9 +1,10 @@
 from typing import Optional
 
+from django.contrib.auth import get_user_model
+
 from cms.api import create_page
 from cms.models import Page
 from cms.test_utils.testcases import CMSTestCase
-from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
