@@ -45,9 +45,7 @@ def serialize_fk(
     # Second choice: Use DRF naming conventions to build the default API URL for the related model
     model_name = related_model._meta.model_name
     try:
-        return get_absolute_frontend_url(
-            request, reverse(f"{model_name}-detail", args=(pk,))
-        )
+        return get_absolute_frontend_url(request, reverse(f"{model_name}-detail", args=(pk,)))
     except NoReverseMatch:
         pass
 
@@ -137,11 +135,7 @@ class GenericPluginSerializer(serializers.ModelSerializer):
                         request,
                         field.related_model,
                         getattr(instance, f"{field.name}_id"),
-                        obj=(
-                            getattr(instance, field.name)
-                            if field.is_cached(instance)
-                            else None
-                        ),
+                        obj=(getattr(instance, field.name) if field.is_cached(instance) else None),
                     )
             elif isinstance(field, JSON_FIELDS) and ret.get(field.name):
                 # If the field is a subclass of JSONField, serialize its value directly
@@ -154,9 +148,7 @@ class PluginDefinitionSerializer(serializers.Serializer):
     Serializer for plugin type definitions.
     """
 
-    plugin_type = serializers.CharField(
-        help_text="Unique identifier for the plugin type"
-    )
+    plugin_type = serializers.CharField(help_text="Unique identifier for the plugin type")
     title = serializers.CharField(help_text="Human readable name of the plugin")
     type = serializers.CharField(help_text="Schema type")
     properties = serializers.DictField(help_text="Property definitions")
@@ -191,7 +183,7 @@ class PluginDefinitionSerializer(serializers.Serializer):
         definitions = {}
 
         for plugin in plugin_pool.plugins.values():
-            #Fall back to GenericPluginSerializer to match the runtime auto-serializer.
+            # Fall back to GenericPluginSerializer to match the runtime auto-serializer.
             serializer_cls = getattr(plugin, "serializer_class", None)
 
             if not serializer_cls:
@@ -214,11 +206,7 @@ class PluginDefinitionSerializer(serializers.Serializer):
                     if field_name in base_exclude:
                         continue
 
-                    properties[
-                        field_name
-                    ] = PluginDefinitionSerializer.map_field_to_schema(
-                        field, field_name
-                    )
+                    properties[field_name] = PluginDefinitionSerializer.map_field_to_schema(field, field_name)
 
                 definitions[plugin.__name__] = {
                     "name": getattr(plugin, "name", plugin.__name__),
@@ -277,9 +265,7 @@ class PluginDefinitionSerializer(serializers.Serializer):
             # Extract nested properties
             properties = {}
             for nested_field_name, nested_field in field.fields.items():
-                properties[
-                    nested_field_name
-                ] = PluginDefinitionSerializer.map_field_to_schema(
+                properties[nested_field_name] = PluginDefinitionSerializer.map_field_to_schema(
                     nested_field, nested_field_name
                 )
             if properties:

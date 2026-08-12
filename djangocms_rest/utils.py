@@ -21,9 +21,7 @@ def get_site_filtered_queryset(site: Site) -> QuerySet:
 
 
 def get_object(site: Site, path: str) -> Page:
-    page_urls = (
-        PageUrl.objects.get_for_site(site).filter(path=path).select_related("page")
-    )
+    page_urls = PageUrl.objects.get_for_site(site).filter(path=path).select_related("page")
     page_urls = list(page_urls)
     try:
         page = page_urls[0].page
@@ -48,9 +46,7 @@ def get_absolute_frontend_url(request: Request, path: str) -> str:
     if path is None:
         return None
     protocol = getattr(request, "scheme", "http")
-    domain = getattr(
-        request, "get_host", lambda: Site.objects.get_current(request).domain
-    )()
+    domain = getattr(request, "get_host", lambda: Site.objects.get_current(request).domain)()
     if not path.startswith("/"):
         path = f"/{path}"
     return f"{protocol}://{domain}{path}"

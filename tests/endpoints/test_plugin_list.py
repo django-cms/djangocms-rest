@@ -12,9 +12,7 @@ class PluginListTestCase(BaseCMSRestTestCase):
         from cms.plugin_pool import plugin_pool
 
         type_checks = PLUGIN_FIELD_TYPES
-        expected_plugin_types = [
-            plugin.__name__ for plugin in plugin_pool.get_all_plugins()
-        ]
+        expected_plugin_types = [plugin.__name__ for plugin in plugin_pool.get_all_plugins()]
         expected_dummy_plugin_signature = {
             "plugin_type": "DummyNumberPlugin",
             "title": "Dummy Number Plugin",
@@ -66,11 +64,7 @@ class PluginListTestCase(BaseCMSRestTestCase):
 
         # Check signature of DummyNumberPlugin
         dummy_plugin = next(
-            (
-                plugin
-                for plugin in data
-                if plugin.get("plugin_type") == "DummyNumberPlugin"
-            ),
+            (plugin for plugin in data if plugin.get("plugin_type") == "DummyNumberPlugin"),
             None,
         )
         self.assertIsNotNone(dummy_plugin, "DummyNumberPlugin not found in response")

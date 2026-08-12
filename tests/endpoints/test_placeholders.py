@@ -1,6 +1,8 @@
+from django.contrib.contenttypes.models import ContentType
+
 from cms.api import add_plugin, create_page
 from cms.models import PageContent
-from django.contrib.contenttypes.models import ContentType
+
 from rest_framework.reverse import reverse
 
 from tests.base import BaseCMSRestTestCase

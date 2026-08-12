@@ -2,9 +2,8 @@ from django.db import models
 
 from cms.models import CMSPlugin
 
-from filer.fields.image import FilerImageField
-
 from djangocms_text.fields import HTMLField
+from filer.fields.image import FilerImageField
 
 
 class SimpleText(models.Model):

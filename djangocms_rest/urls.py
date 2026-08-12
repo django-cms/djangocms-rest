@@ -1,7 +1,19 @@
+from django.apps import apps
 from django.urls import path
 
 from . import views
+from .appresolver import get_rest_app_patterns
 from .schemas import create_view_with_url_name
+
+
+def _extension_endpoints():
+    """Endpoints contributed by third-party apps via their ``cms_config.py``."""
+    try:
+        extension = apps.get_app_config("djangocms_rest").cms_extension
+    except (LookupError, AttributeError):
+        # App not ready or cms_config autodiscovery has not run yet.
+        return []
+    return list(getattr(extension, "endpoints", []))
 
 
 urlpatterns = [
@@ -126,3 +138,9 @@ urlpatterns = [
         name="breadcrumbs",
     ),
 ]
+
+# Independent endpoints contributed via cms_config (e.g. djangocms-alias).
+urlpatterns += _extension_endpoints()
+
+# Path-mirrored apphook REST endpoints (e.g. djangocms-stories).
+urlpatterns += get_rest_app_patterns()

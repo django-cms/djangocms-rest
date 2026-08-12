@@ -31,11 +31,7 @@ def assert_field_types(
     field_value = obj[field]
 
     # Handle a list of structured objects [{}]
-    if (
-        isinstance(expected_type, list)
-        and len(expected_type) == 1
-        and isinstance(expected_type[0], dict)
-    ):
+    if isinstance(expected_type, list) and len(expected_type) == 1 and isinstance(expected_type[0], dict):
         # First, verify this is a list
         test_case.assertIsInstance(
             field_value,
@@ -47,9 +43,7 @@ def assert_field_types(
         nested_structure = expected_type[0]
         for i, item in enumerate(field_value):
             for nested_field, nested_type in nested_structure.items():
-                assert_field_types(
-                    test_case, item, nested_field, nested_type, f"{field}[{i}]"
-                )
+                assert_field_types(test_case, item, nested_field, nested_type, f"{field}[{i}]")
 
     # Handle dictionary of a structured object {}
     elif isinstance(expected_type, dict):

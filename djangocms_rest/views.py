@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import Any
+
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
 from django.utils.functional import lazy
@@ -11,7 +12,6 @@ from cms.utils.page_permissions import user_can_view_page
 from menus.menu_pool import menu_pool
 from menus.templatetags.menu_tags import ShowBreadcrumb, ShowMenu, ShowSubMenu
 
-
 from rest_framework.exceptions import NotFound
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.request import Request
@@ -19,6 +19,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from djangocms_rest.permissions import CanViewPage, IsAllowedPublicLanguage
+from djangocms_rest.schemas import extend_page_search_schema, extend_placeholder_schema, menu_schema_class
 from djangocms_rest.serializers.languages import LanguageSerializer
 from djangocms_rest.serializers.menus import NavigationNodeSerializer
 from djangocms_rest.serializers.pages import (
@@ -33,7 +34,6 @@ from djangocms_rest.utils import (
     get_site_filtered_queryset,
 )
 from djangocms_rest.views_base import BaseAPIView, BaseListAPIView, preview_schema
-from djangocms_rest.schemas import extend_placeholder_schema, extend_page_search_schema, menu_schema_class
 
 # Generate the plugin definitions once at module load time
 # This avoids the need to import the plugin definitions in every view

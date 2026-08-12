@@ -8,11 +8,13 @@ This test suite identifies and documents potential cache-related issues:
 - Missing manual cache clear mechanisms
 """
 
-from cms.api import add_plugin, create_page
+from unittest.mock import MagicMock
+
 from django.contrib.sites.models import Site
 from django.core.cache import cache
 from django.test import RequestFactory, TestCase
-from unittest.mock import MagicMock
+
+from cms.api import add_plugin, create_page
 
 from tests.base import BaseCMSRestTestCase
 
@@ -40,7 +42,7 @@ class CacheVersioningTests(TestCase):
         placeholder.pk = 1
         placeholder.get_vary_cache_on = MagicMock(return_value=[])
 
-        version1, vary_list1 = _get_placeholder_cache_version(placeholder, "en", 1)
+        version1, _vary_list1 = _get_placeholder_cache_version(placeholder, "en", 1)
         self.assertIsNotNone(version1)
         self.assertIsInstance(version1, int)
 
@@ -181,8 +183,8 @@ class CachePreviewModeTests(BaseCMSRestTestCase):
         Verify that preview and public modes don't share cache.
         Draft content should never leak to public API.
         """
-        from django.urls import reverse
         from django.test import Client
+        from django.urls import reverse
 
         # Create a page with placeholder
         page = create_page(

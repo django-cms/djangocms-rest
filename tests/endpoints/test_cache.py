@@ -1,9 +1,9 @@
-from cms.api import add_plugin
-from cms.models import PageContent
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.cache import cache
 
+from cms.api import add_plugin
+from cms.models import PageContent
 
 from rest_framework.reverse import reverse
 
@@ -65,9 +65,7 @@ class CachingAPITestCase(BaseCMSRestTestCase):
         cached_content = get_placeholder_rest_cache(
             self.placeholder, lang="en", site_id=get_current_site(None).pk, request=None
         )
-        self.assertIsNotNone(
-            cached_content, "Cache was not populated after first request"
-        )
+        self.assertIsNotNone(cached_content, "Cache was not populated after first request")
 
         # Request #1 - Modify content but don't invalidate cache (testing if cache is used)
         self.plugin.body = "<p>Updated content that should not appear while cached</p>"
@@ -79,9 +77,7 @@ class CachingAPITestCase(BaseCMSRestTestCase):
         placeholder2 = response2.json()
 
         # Request #2 - Responses should be identical (using cached content)
-        self.assertEqual(
-            placeholder1, placeholder2, "Responses differ - cache might not be working"
-        )
+        self.assertEqual(placeholder1, placeholder2, "Responses differ - cache might not be working")
 
         # Request #3 - Clear cache and verify we get fresh content
         cache.clear()
@@ -125,9 +121,7 @@ class CachingAPITestCase(BaseCMSRestTestCase):
         placeholder2 = response2.json()
 
         # Staff request #2 - Update content
-        self.assertIn(
-            "Staff should see this content", placeholder2["content"][0]["body"]
-        )
+        self.assertIn("Staff should see this content", placeholder2["content"][0]["body"])
         self.assertNotEqual(
             placeholder1["content"],
             placeholder2["content"],
@@ -139,9 +133,7 @@ class CachingAPITestCase(BaseCMSRestTestCase):
         response3 = self.client.get(self.get_placeholder_url())
         self.assertEqual(response3.status_code, 200)
         placeholder3 = response3.json()
-        self.assertEqual(
-            placeholder1, placeholder3, "Anonymous user should still get cached content"
-        )
+        self.assertEqual(placeholder1, placeholder3, "Anonymous user should still get cached content")
 
         # Restore content
         self.plugin.body = original_content
@@ -151,49 +143,36 @@ class CachingAPITestCase(BaseCMSRestTestCase):
         """
         Test edge cases in cache version functions to improve code coverage.
         """
+        from django.contrib.sites.shortcuts import get_current_site
+        from django.core.cache import cache
+
         from djangocms_rest.serializers.utils.cache import (
             _get_placeholder_cache_version,
             _set_placeholder_cache_version,
         )
-        from django.core.cache import cache
-        from django.contrib.sites.shortcuts import get_current_site
 
         # Clear the cache to start with a clean state
         cache.clear()
 
         # Test _get_placeholder_cache_version with no cached data (should create new)
-        version1, vary_list1 = _get_placeholder_cache_version(
-            self.placeholder, "en", get_current_site(None).pk
-        )
+        version1, vary_list1 = _get_placeholder_cache_version(self.placeholder, "en", get_current_site(None).pk)
         self.assertIsNotNone(version1)
         self.assertEqual(vary_list1, [])
 
         # Test _set_placeholder_cache_version with None version (should create new)
-        _set_placeholder_cache_version(
-            self.placeholder, "en", get_current_site(None).pk, None
-        )
-        version2, vary_list2 = _get_placeholder_cache_version(
-            self.placeholder, "en", get_current_site(None).pk
-        )
+        _set_placeholder_cache_version(self.placeholder, "en", get_current_site(None).pk, None)
+        version2, _vary_list2 = _get_placeholder_cache_version(self.placeholder, "en", get_current_site(None).pk)
         self.assertIsNotNone(version2)
         self.assertNotEqual(version1, version2)  # Should be a new timestamp
 
         # Test _set_placeholder_cache_version with negative version (should create new)
-        _set_placeholder_cache_version(
-            self.placeholder, "en", get_current_site(None).pk, -1
-        )
-        version3, vary_list3 = _get_placeholder_cache_version(
-            self.placeholder, "en", get_current_site(None).pk
-        )
+        _set_placeholder_cache_version(self.placeholder, "en", get_current_site(None).pk, -1)
+        version3, _vary_list3 = _get_placeholder_cache_version(self.placeholder, "en", get_current_site(None).pk)
         self.assertIsNotNone(version3)
         self.assertNotEqual(version2, version3)  # Should be a new timestamp
 
         # Test _set_placeholder_cache_version with None vary_on_list
-        _set_placeholder_cache_version(
-            self.placeholder, "en", get_current_site(None).pk, 12345, None
-        )
-        version4, vary_list4 = _get_placeholder_cache_version(
-            self.placeholder, "en", get_current_site(None).pk
-        )
+        _set_placeholder_cache_version(self.placeholder, "en", get_current_site(None).pk, 12345, None)
+        version4, vary_list4 = _get_placeholder_cache_version(self.placeholder, "en", get_current_site(None).pk)
         self.assertEqual(version4, 12345)
         self.assertEqual(vary_list4, [])
