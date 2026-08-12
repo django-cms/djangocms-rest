@@ -5,7 +5,6 @@ Changelog
 1.3.0 (12-08-2026)
 ==================
 
-## What's Changed
 * feat: Allow django cms apps to register for rest support by @fsbraun in https://github.com/django-cms/djangocms-rest/pull/115
 * feat: add SPECTACULAR_SETTINGS with dynamic version tracking by @metaforx in https://github.com/django-cms/djangocms-rest/pull/108
 * fix: update PluginDefinitionSerializer by @metaforx in https://github.com/django-cms/djangocms-rest/pull/105
