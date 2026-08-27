@@ -10,7 +10,6 @@ jobs:
       matrix:
         python-version: [ "3.10", "3.11", "3.12", "3.13", "3.14"]
         requirements-file: [
-          dj42_cms41.txt,
           dj42_cms50.txt,
           dj50_cms50.txt,
           dj51_cms50.txt,
@@ -32,9 +31,6 @@ jobs:
             requirements-file: dj60_cms51.txt
           - python-version: "3.11"
             requirements-file: dj60_cms51.txt
-          - python-version: "3.14"
-            requirements-file: dj42_cms41.txt
-            os: ubuntu-latest
           - python-version: "3.14"
             requirements-file: dj42_cms50.txt
             os: ubuntu-latest
@@ -62,8 +58,9 @@ jobs:
       run: |
         uv venv
         source .venv/bin/activate
-        uv pip install -r tests/requirements/${{ matrix.requirements-file }}
-        uv pip install .
+        # Resolve the pins and the package together -- a separate `uv pip install .`
+        # re-resolves afterwards and silently lifts the pinned Django/django-cms.
+        uv pip install -r tests/requirements/${{ matrix.requirements-file }} .
 
     - name: Run coverage
       run: |

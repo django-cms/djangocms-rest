@@ -2,6 +2,18 @@
 Changelog
 =========
 
+1.3.0 (12-08-2026)
+==================
+
+* feat: Allow django cms apps to register for rest support by @fsbraun in https://github.com/django-cms/djangocms-rest/pull/115
+* feat: add SPECTACULAR_SETTINGS with dynamic version tracking by @metaforx in https://github.com/django-cms/djangocms-rest/pull/108
+* fix: update PluginDefinitionSerializer by @metaforx in https://github.com/django-cms/djangocms-rest/pull/105
+* fix: Removed test and dev dependencies from actual runtime dependencies by @fsbraun in https://github.com/django-cms/djangocms-rest/pull/112
+* docs: update endpoint specs by @metaforx in https://github.com/django-cms/djangocms-rest/pull/107
+* docs: update changelog for 1.2.0 release by @metaforx in https://github.com/django-cms/djangocms-rest/pull/109
+* docs: Strengthen diataxis structure by @fsbraun in https://github.com/django-cms/djangocms-rest/pull/113
+
+
 1.2.0 (14-05-2026)
 ==================
 
