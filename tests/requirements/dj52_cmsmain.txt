@@ -3,3 +3,11 @@
 Django>=5.2,<5.3
 git+https://github.com/django-cms/django-cms.git@main
 
+# django-treebeard 7 moved add_root() onto the manager; django-cms main's
+# PageManager does not provide it, so create_page() fails during setUpClass.
+django-treebeard<5
+
+# django-treebeard 7 moved add_root() onto the manager; django-cms main's
+# PageManager does not provide it, so create_page() fails on collection.
+django-treebeard<5
+
