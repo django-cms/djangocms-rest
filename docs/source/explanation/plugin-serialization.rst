@@ -79,6 +79,11 @@ registered plugin it returns a JSON-schema-style description derived from the pl
 serializer fields — mapping DRF field types to JSON types and formats (``CharField`` →
 ``string``, ``ImageField`` → ``string``/``uri``, choices → ``enum``, and so on).
 
+Relations follow the resolution rules above: because a foreign key serializes to the
+related object's API endpoint (or an identifier), it is described as ``string``, not as
+the raw pk. Fields that may serialize to ``None`` — a nullable foreign key, or
+``parent_plugin_type`` on a top-level plugin — carry ``"nullable": true``.
+
 This is what makes fully typed frontends possible: client generators read these
 definitions to produce accurate plugin types. The richer the serializer (especially a
 custom ``serializer_class`` with explicit fields and help text), the richer the generated

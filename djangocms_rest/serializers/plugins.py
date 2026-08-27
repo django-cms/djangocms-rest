@@ -114,7 +114,7 @@ JSON_FIELDS = tuple(
 
 
 class GenericPluginSerializer(serializers.ModelSerializer):
-    parent_plugin_type = serializers.SerializerMethodField()
+    parent_plugin_type = serializers.SerializerMethodField(allow_null=True)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -250,8 +250,11 @@ class PluginDefinitionSerializer(serializers.Serializer):
             "FileField": {"type": "string", "format": "uri"},
             "ImageField": {"type": "string", "format": "uri"},
             "JSONField": {"type": "object"},
-            "ForeignKey": {"type": "integer"},
-            "PrimaryKeyRelatedField": {"type": "integer"},
+            # Relations are serialized by ``serialize_fk`` as the related object's
+            # API endpoint, falling back to an "<app_label>.<model>:<pk>" identifier
+            # -- a string either way, never the raw pk.
+            "ForeignKey": {"type": "string"},
+            "PrimaryKeyRelatedField": {"type": "string"},
             "ListField": {"type": "array"},
             "DictField": {"type": "object"},
             "UUIDField": {"type": "string", "format": "uuid"},
@@ -277,5 +280,11 @@ class PluginDefinitionSerializer(serializers.Serializer):
         # Description from help_text
         if getattr(field, "help_text", None):
             schema["description"] = str(field.help_text)
+
+        # Fields that may serialize to ``None`` must say so, or generated clients
+        # reject the payload (e.g. a nullable foreign key, or ``parent_plugin_type``
+        # on a top-level plugin).
+        if getattr(field, "allow_null", False):
+            schema["nullable"] = True
 
         return schema
