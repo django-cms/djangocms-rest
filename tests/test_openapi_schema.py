@@ -281,10 +281,13 @@ class OpenAPISchemaTestCase(RESTTestCase):
                 if not has_preview:
                     missing_preview.append(path)
 
-        # This is informational - some endpoints might not need preview
-        # So we just check that at least some have it
-        if preview_endpoints and len(missing_preview) == len(preview_endpoints):
-            self.fail(f"No preview parameter found in any of the relevant endpoints: {preview_endpoints}")
+        # All page and placeholder endpoints support previewing unpublished
+        # content, so every one of them must document the preview parameter.
+        if missing_preview:
+            self.fail(
+                "The 'preview' query parameter is missing from these endpoints: "
+                + ", ".join(missing_preview)
+            )
 
     def test_menu_schema_get_operation_id_with_url_name_on_class(self):
         """Test MenuSchema.get_operation_id when _url_name is set on view class (not instance)."""
