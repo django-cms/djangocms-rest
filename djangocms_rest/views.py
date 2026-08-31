@@ -138,6 +138,7 @@ class PageTreeListView(BaseAPIView):
         return Response(serializer.data)
 
 
+@preview_schema
 @menu_schema_class
 class PageDetailView(BaseAPIView):
     permission_classes = [IsAllowedPublicLanguage, CanViewPage]
