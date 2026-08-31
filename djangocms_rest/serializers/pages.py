@@ -1,5 +1,7 @@
 from django.db import models
+from django.urls import reverse
 
+from cms.apphook_pool import apphook_pool
 from cms.models import PageContent
 from cms.utils.placeholder import get_declared_placeholders_for_obj
 
@@ -29,8 +31,40 @@ class BasePageSerializer(serializers.Serializer):
     languages = serializers.ListSerializer(child=serializers.CharField(), allow_empty=True, required=False)
     is_preview = serializers.BooleanField(default=False)
     application_namespace = serializers.CharField(max_length=200, allow_null=True)
+    app = serializers.DictField(
+        required=False,
+        allow_null=True,
+        help_text="REST entry point of the apphook mounted on this page, if any.",
+    )
     creation_date = serializers.DateTimeField()
     changed_date = serializers.DateTimeField()
+
+
+def get_apphook_api_endpoint(request, page, language: str) -> dict | None:
+    """Discovery block for a page that mounts a REST-capable apphook.
+
+    Returns ``{"namespace": ..., "api_endpoint": ...}`` pointing at the
+    path-mirrored root of the apphook's REST urls (``/api/<lang>/<page-path>/``),
+    or ``None`` when the page has no apphook or the apphook offers no REST urls.
+    """
+    application_urls = getattr(page, "application_urls", None)
+    if not application_urls:
+        return None
+    app = apphook_pool.get_apphook(application_urls)
+    if app is None or not hasattr(app, "get_rest_urls"):
+        return None
+
+    # The apphook REST urls are mounted at ``/api/<lang>/<page-path>/`` -- the
+    # same prefix as the core API minus the ``pages/`` segment.
+    pages_root = reverse("page-root", kwargs={"language": language})  # /api/<lang>/pages/
+    api_lang_root = pages_root[: -len("pages/")]
+    path = page.get_path(language)
+    app_root = f"{api_lang_root}{path}/" if path else api_lang_root
+
+    return {
+        "namespace": page.application_namespace or app.app_name,
+        "api_endpoint": get_absolute_frontend_url(request, app_root),
+    }
 
 
 class BasePageContentMixin:
@@ -72,6 +106,7 @@ class BasePageContentMixin:
             "languages": page_content.page.get_languages(),
             "is_preview": getattr(self, "is_preview", False),
             "application_namespace": application_namespace,
+            "app": get_apphook_api_endpoint(request, page_content.page, page_content.language),
             "creation_date": page_content.creation_date,
             "changed_date": page_content.changed_date,
             "details": api_endpoint,
@@ -134,6 +169,7 @@ class PageContentSerializer(BasePageSerializer, BasePageContentMixin):
     """
     Serialize the page content with the placeholders in the order they are declared in the template.
     """
+
     placeholders = PlaceholderSerializer(many=True, required=False)
 
     def __init__(self, *args, **kwargs):
@@ -142,14 +178,9 @@ class PageContentSerializer(BasePageSerializer, BasePageContentMixin):
 
     def to_representation(self, page_content: PageContent) -> dict:
         declared_placeholders = get_declared_placeholders_for_obj(page_content)
-        placeholder_map = {
-            placeholder.slot: placeholder
-            for placeholder in page_content.placeholders.all()
-        }
+        placeholder_map = {placeholder.slot: placeholder for placeholder in page_content.placeholders.all()}
         placeholders = [
-            placeholder_map[declared.slot]
-            for declared in declared_placeholders
-            if declared.slot in placeholder_map
+            placeholder_map[declared.slot] for declared in declared_placeholders if declared.slot in placeholder_map
         ]
 
         data = self.get_base_representation(page_content)

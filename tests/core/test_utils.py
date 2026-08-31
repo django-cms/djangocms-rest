@@ -1,5 +1,7 @@
 from unittest import skip
+
 from django.contrib.sites.models import Site
+
 from rest_framework.test import APIRequestFactory
 
 from djangocms_rest.utils import get_absolute_frontend_url

@@ -23,9 +23,7 @@ class PageDetailAPITestCase(BaseCMSRestTestCase):
         type_checks = PAGE_CONTENT_FIELD_TYPES
 
         # GET
-        response = self.client.get(
-            reverse("page-detail", kwargs={"language": "en", "path": "page-0"})
-        )
+        response = self.client.get(reverse("page-detail", kwargs={"language": "en", "path": "page-0"}))
         self.assertEqual(response.status_code, 200)
         page = response.json()
 
@@ -39,23 +37,15 @@ class PageDetailAPITestCase(BaseCMSRestTestCase):
             )
 
         # Check Invalid Path
-        response = self.client.get(
-            reverse(
-                "page-detail", kwargs={"language": "en", "path": "nonexistent-page"}
-            )
-        )
+        response = self.client.get(reverse("page-detail", kwargs={"language": "en", "path": "nonexistent-page"}))
         self.assertEqual(response.status_code, 404)
 
         # Check Invalid Language
-        response = self.client.get(
-            reverse("page-detail", kwargs={"language": "xx", "path": "page-0"})
-        )
+        response = self.client.get(reverse("page-detail", kwargs={"language": "xx", "path": "page-0"}))
         self.assertEqual(response.status_code, 404)
 
     # GET PREVIEW - Protected
     def test_get_protected(self):
         self.client.force_login(self.user)
-        response = self.client.get(
-            reverse("page-detail", kwargs={"language": "en", "path": "page-0"})
-        )
+        response = self.client.get(reverse("page-detail", kwargs={"language": "en", "path": "page-0"}))
         self.assertEqual(response.status_code, 200)

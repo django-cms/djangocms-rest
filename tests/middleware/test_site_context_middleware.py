@@ -1,9 +1,9 @@
+from django.contrib.sites.models import Site
 from django.urls import reverse
 
-from tests.base import BaseCMSRestTestCase
-
-from django.contrib.sites.models import Site
 from cms.api import create_page, publish_page
+
+from tests.base import BaseCMSRestTestCase
 
 
 class SiteContextMiddlewareTestCase(BaseCMSRestTestCase):
@@ -106,9 +106,7 @@ class SiteContextMiddlewareTestCase(BaseCMSRestTestCase):
         self.assertEqual(response.status_code, 400)
 
         # Test without a site ID header (should default to site 1)
-        response = self.client.get(
-            reverse("page-detail", kwargs={"language": "en", "path": "test-page"})
-        )
+        response = self.client.get(reverse("page-detail", kwargs={"language": "en", "path": "test-page"}))
         self.assertEqual(response.status_code, 200)
         default_data = response.json()
 

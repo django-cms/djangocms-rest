@@ -4,6 +4,7 @@ Tests for OpenAPI schema generation with drf-spectacular.
 Ensures that all serializer fields are properly documented in the OpenAPI schema,
 particularly dynamically populated fields like PlaceholderSerializer.content.
 """
+
 from rest_framework.reverse import reverse
 
 from tests.base import RESTTestCase
@@ -43,7 +44,7 @@ class OpenAPISchemaTestCase(RESTTestCase):
         errors = []
         for path, path_item in paths.items():
             # Check that path has at least one HTTP method
-            methods = [m for m in path_item.keys() if m in ["get", "post", "put", "patch", "delete"]]
+            methods = [m for m in path_item if m in ["get", "post", "put", "patch", "delete"]]
             if not methods:
                 errors.append(f"Path '{path}' has no HTTP methods defined")
                 continue
@@ -59,7 +60,7 @@ class OpenAPISchemaTestCase(RESTTestCase):
 
                 # Check for at least one successful response (2xx)
                 responses = operation["responses"]
-                has_success = any(str(code).startswith("2") for code in responses.keys())
+                has_success = any(str(code).startswith("2") for code in responses)
                 if not has_success:
                     errors.append(f"{method.upper()} {path} has no successful (2xx) response defined")
 
@@ -105,7 +106,7 @@ class OpenAPISchemaTestCase(RESTTestCase):
 
         if missing:
             available = list(schemas.keys())
-            self.fail(f"Missing serializers in schema: {missing}\n" f"Available serializers: {available}")
+            self.fail(f"Missing serializers in schema: {missing}\nAvailable serializers: {available}")
 
     def test_all_serializers_have_required_structure(self):
         """
@@ -247,7 +248,7 @@ class OpenAPISchemaTestCase(RESTTestCase):
         paths = schema.get("paths", {})
 
         # Check for placeholder detail endpoint pattern
-        placeholder_endpoints = [path for path in paths.keys() if "placeholder" in path.lower()]
+        placeholder_endpoints = [path for path in paths if "placeholder" in path.lower()]
         self.assertTrue(
             len(placeholder_endpoints) > 0,
             "At least one placeholder endpoint should be documented in the schema",
@@ -264,7 +265,7 @@ class OpenAPISchemaTestCase(RESTTestCase):
         paths = response.data.get("paths", {})
 
         # Endpoints that should support preview parameter
-        preview_endpoints = [path for path in paths.keys() if any(x in path for x in ["/pages/", "/placeholders/"])]
+        preview_endpoints = [path for path in paths if any(x in path for x in ["/pages/", "/placeholders/"])]
 
         missing_preview = []
         for path in preview_endpoints:
@@ -327,10 +328,12 @@ class OpenAPISchemaTestCase(RESTTestCase):
 
     def test_menu_schema_get_operation_id_fallback_when_no_url_name(self):
         """Test MenuSchema.get_operation_id falls back to default when _url_name is not set."""
+        from unittest.mock import patch
+
+        from drf_spectacular.openapi import AutoSchema
+
         import djangocms_rest.schemas
         from djangocms_rest.views import MenuView
-        from drf_spectacular.openapi import AutoSchema
-        from unittest.mock import patch
 
         view_instance = MenuView()
         schema = djangocms_rest.schemas.MenuSchema()
@@ -343,10 +346,12 @@ class OpenAPISchemaTestCase(RESTTestCase):
 
     def test_menu_schema_get_operation_id_exception_handler(self):
         """Test MenuSchema.get_operation_id handles exceptions and falls back to default."""
+        from unittest.mock import patch
+
+        from drf_spectacular.openapi import AutoSchema
+
         import djangocms_rest.schemas
         from djangocms_rest.views import MenuView
-        from drf_spectacular.openapi import AutoSchema
-        from unittest.mock import patch
 
         view_instance = MenuView()
         view_instance._url_name = object()
@@ -374,6 +379,7 @@ class OpenAPISchemaTestCase(RESTTestCase):
         import importlib
         import sys
         from unittest.mock import patch
+
         from djangocms_rest.views import MenuView
 
         def _reload_schemas_without_spectacular():
@@ -381,7 +387,7 @@ class OpenAPISchemaTestCase(RESTTestCase):
             if "djangocms_rest.schemas" in sys.modules:
                 del sys.modules["djangocms_rest.schemas"]
 
-            modules_to_remove = [key for key in sys.modules.keys() if key.startswith("djangocms_rest.schemas")]
+            modules_to_remove = [key for key in sys.modules if key.startswith("djangocms_rest.schemas")]
             for module_name in modules_to_remove:
                 del sys.modules[module_name]
 

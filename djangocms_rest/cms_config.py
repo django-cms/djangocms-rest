@@ -3,12 +3,11 @@ from functools import cached_property
 from django.conf import settings
 from django.urls import NoReverseMatch, reverse
 
-from cms.app_base import CMSAppConfig
+from cms.app_base import CMSAppConfig, CMSAppExtension
 from cms.cms_menus import CMSMenu
 from cms.models import Page, PageContent
 from cms.utils.i18n import force_language, get_current_language
 from menus import base
-
 
 try:
     from filer.models import File
@@ -103,9 +102,9 @@ class RESTToolbarMixin:
 
     if getattr(settings, "REST_JSON_RENDERING", not getattr(settings, "CMS_TEMPLATES", False)):
         try:
-            from djangocms_text import settings
+            from djangocms_text import settings as text_settings
 
-            settings.TEXT_INLINE_EDITING = False
+            text_settings.TEXT_INLINE_EDITING = False
         except ImportError:
             pass
 
@@ -114,6 +113,25 @@ class RESTToolbarMixin:
             from .plugin_rendering import RESTRenderer
 
             return RESTRenderer(request=self.request)
+
+
+class RESTExtension(CMSAppExtension):
+    """Collects REST API extensions contributed by third-party apps.
+
+    A consumer app opts in from its own ``cms_config.py`` by setting
+    ``djangocms_rest_enabled = True`` and declaring ``cms_rest_endpoints`` --
+    a list of url patterns that are mounted under the API root. The patterns
+    are expected to be self-contained (including any ``<slug:language>/``
+    prefix), so this extension is a dumb collector.
+    """
+
+    def __init__(self):
+        self.endpoints = []
+
+    def configure_app(self, cms_config):
+        endpoints = getattr(cms_config, "cms_rest_endpoints", None)
+        if endpoints:
+            self.endpoints.extend(endpoints)
 
 
 class RESTCMSConfig(CMSAppConfig):

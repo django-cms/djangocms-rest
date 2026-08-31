@@ -1,6 +1,6 @@
-from rest_framework import serializers
-
 from menus.base import NavigationNode
+
+from rest_framework import serializers
 
 from djangocms_rest.utils import get_absolute_frontend_url
 

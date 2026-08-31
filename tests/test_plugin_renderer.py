@@ -1,17 +1,17 @@
 import json
-from django.urls import reverse
-from tests.base import BaseCMSRestTestCase
 
 from django.contrib.contenttypes.models import ContentType
 from django.core.files import File
-
+from django.urls import reverse
 
 from cms import api
 from cms.models import PageContent
 from cms.toolbar.utils import get_object_edit_url, get_object_preview_url
 
-from filer.models.imagemodels import Image
 from bs4 import BeautifulSoup
+from filer.models.imagemodels import Image
+
+from tests.base import BaseCMSRestTestCase
 
 
 def get_text_from_html(html, selector):
@@ -91,17 +91,13 @@ class PlaceholdersAPITestCase(BaseCMSRestTestCase):
         # Edit endpoint and api endpoint should return the same content
 
         self.client.force_login(self.user)
-        response = self.client.get(
-            get_object_edit_url(self.page.get_admin_content("en"))
-        )
+        response = self.client.get(get_object_edit_url(self.page.get_admin_content("en")))
         api_response = self.client.get(
             reverse(
                 "placeholder-detail",
                 kwargs={
                     "language": "en",
-                    "content_type_id": ContentType.objects.get_for_model(
-                        PageContent
-                    ).id,
+                    "content_type_id": ContentType.objects.get_for_model(PageContent).id,
                     "object_id": self.page.get_admin_content("en").id,
                     "slot": "content",
                 },
@@ -118,17 +114,13 @@ class PlaceholdersAPITestCase(BaseCMSRestTestCase):
         # Edit endpoint and api endpoint should return the same content
 
         self.client.force_login(self.user)
-        response = self.client.get(
-            get_object_preview_url(self.page.get_admin_content("en"))
-        )
+        response = self.client.get(get_object_preview_url(self.page.get_admin_content("en")))
         api_response = self.client.get(
             reverse(
                 "placeholder-detail",
                 kwargs={
                     "language": "en",
-                    "content_type_id": ContentType.objects.get_for_model(
-                        PageContent
-                    ).id,
+                    "content_type_id": ContentType.objects.get_for_model(PageContent).id,
                     "object_id": self.page.get_admin_content("en").id,
                     "slot": "content",
                 },
@@ -146,9 +138,7 @@ class PlaceholdersAPITestCase(BaseCMSRestTestCase):
     def test_edit_endpoint(self):
         self.client.force_login(self.user)
 
-        response = self.client.get(
-            get_object_edit_url(self.page.get_admin_content("en"))
-        )
+        response = self.client.get(get_object_edit_url(self.page.get_admin_content("en")))
         self.assertEqual(response.status_code, 200)
 
         # Test for plugin markers
@@ -188,9 +178,5 @@ class PlaceholdersAPITestCase(BaseCMSRestTestCase):
         )
 
         # Test for rendering of numbers
-        self.assertContains(
-            response, '<span class="key">"integer"</span>: <span class="num">42</span>'
-        )
-        self.assertContains(
-            response, '<span class="key">"float"</span>: <span class="num">3.14</span>'
-        )
+        self.assertContains(response, '<span class="key">"integer"</span>: <span class="num">42</span>')
+        self.assertContains(response, '<span class="key">"float"</span>: <span class="num">3.14</span>')

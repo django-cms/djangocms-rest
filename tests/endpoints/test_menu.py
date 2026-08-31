@@ -1,9 +1,10 @@
 from django.contrib.sites.models import Site
+
+from cms.models import Page
+
 from rest_framework.reverse import reverse
 
 from tests.base import BaseCMSRestTestCase
-
-from cms.models import Page
 
 
 class PageListAPITestCase(BaseCMSRestTestCase):
