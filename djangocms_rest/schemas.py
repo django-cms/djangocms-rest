@@ -88,6 +88,18 @@ try:
         ]
     )
 
+    extend_page_detail_schema = extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="content",
+                type=OpenApiTypes.INT,
+                location=OpenApiParameter.QUERY,
+                description="ID of a specific page content version to retrieve (requires preview)",
+                required=False,
+            ),
+        ]
+    )
+
     extend_page_search_schema = extend_schema(
         parameters=[
             OpenApiParameter(
@@ -113,6 +125,10 @@ except ImportError:
         return view_class.as_view()
 
     def extend_placeholder_schema(func):
+        """No-op when drf-spectacular is not available."""
+        return func
+
+    def extend_page_detail_schema(func):
         """No-op when drf-spectacular is not available."""
         return func
 

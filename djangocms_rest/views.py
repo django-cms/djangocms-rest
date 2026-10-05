@@ -19,7 +19,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from djangocms_rest.permissions import CanViewPage, IsAllowedPublicLanguage
-from djangocms_rest.schemas import extend_page_search_schema, extend_placeholder_schema, menu_schema_class
+from djangocms_rest.schemas import (
+    extend_page_detail_schema,
+    extend_page_search_schema,
+    extend_placeholder_schema,
+    menu_schema_class,
+)
 from djangocms_rest.serializers.languages import LanguageSerializer
 from djangocms_rest.serializers.menus import NavigationNodeSerializer
 from djangocms_rest.serializers.pages import (
@@ -144,6 +149,7 @@ class PageDetailView(BaseAPIView):
     permission_classes = [IsAllowedPublicLanguage, CanViewPage]
     serializer_class = PageContentSerializer
 
+    @extend_page_detail_schema
     def get(self, request: Request, language: str, path: str = "") -> Response:
         """Retrieve a page instance. The page instance includes the placeholders and
         their links to retrieve dynamic content."""
@@ -151,8 +157,15 @@ class PageDetailView(BaseAPIView):
         page = get_object(site, path)
         self.check_object_permissions(request, page)
 
+        content_id = request.GET.get("content")
         try:
-            page_content = getattr(page, self.content_getter)(language, fallback=True)
+            if content_id and self._preview_requested():
+                if not content_id.isdecimal():
+                    raise PageContent.DoesNotExist()
+                # Preview a specific (e.g., historical) page content version
+                page_content = PageContent.admin_manager.get(pk=content_id, page=page, language=language)
+            else:
+                page_content = getattr(page, self.content_getter)(language, fallback=True)
             if not page_content:
                 raise PageContent.DoesNotExist()
             serializer = self.serializer_class(page_content, read_only=True, context={"request": request})
