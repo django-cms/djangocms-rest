@@ -287,6 +287,22 @@ class OpenAPISchemaTestCase(RESTTestCase):
         if preview_endpoints and len(missing_preview) == len(preview_endpoints):
             self.fail(f"No preview parameter found in any of the relevant endpoints: {preview_endpoints}")
 
+    def test_content_parameter_documented(self):
+        """
+        Test that the 'content' query parameter is documented for the page detail endpoints.
+        """
+        response = self.client.get(reverse("schema"))
+        self.assertEqual(response.status_code, 200)
+
+        page_detail_paths = [path for path in response.data["paths"] if path.rstrip("/").endswith("/pages")]
+        page_detail_paths += [path for path in response.data["paths"] if "/pages/{path}" in path]
+        self.assertTrue(page_detail_paths)
+        for path in page_detail_paths:
+            parameters = response.data["paths"][path]["get"].get("parameters", [])
+            query_params = {param["name"] for param in parameters if param["in"] == "query"}
+            self.assertIn("content", query_params, path)
+            self.assertIn("preview", query_params, path)
+
     def test_menu_schema_get_operation_id_with_url_name_on_class(self):
         """Test MenuSchema.get_operation_id when _url_name is set on view class (not instance)."""
         import djangocms_rest.schemas
